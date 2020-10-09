@@ -51,29 +51,8 @@ public class AbnormalConditionController {
     public HttpResponseContent getAllExceptions(@RequestHeader(value="token") String token) throws Exception{
             String userId = adminService.getUserIdFromToken(token);
             HttpResponseContent response = new HttpResponseContent();
-            List<PrisonerRisk> list = abnormalConditionService.getAllHighRiskLevel("0");
-            List<AbnormalResponse> abnormalResponses = new ArrayList<>();
-            for (int i = 0; i < list.size(); i++) {
-                String id = list.get(i).getId();
-                String prisonerId = list.get(i).getPrisonerId();
-                String prisonerName = prisonerService.getPrisonerNameByPrisonerId(prisonerId);
+            List<AbnormalResponse> abnormalResponses = abnormalConditionService.getAllExceptions();
 
-                String createAt = list.get(i).getCreateAt();
-                String riskValue = list.get(i).getRiskValue();
-                //List<PrisonerAnomaly> prisonerAnomalies = abnormalConditionService.getPrisonerAnomalyByRiskId(id);
-                PrisonerAnomaly prisonerAnomaly = abnormalConditionService.getLatestByRiskId(id);
-                if(prisonerAnomaly!=null) {
-                    AbnormalResponse abnormalResponse = new AbnormalResponse();
-                    abnormalResponse.setCreateAt(createAt);
-                    abnormalResponse.setPrisonerName(prisonerName);
-                    abnormalResponse.setExceptionType("危险");
-                    abnormalResponse.setExceptionLevel(prisonerAnomaly.getLevel());
-                    abnormalResponse.setDealState(prisonerAnomaly.isDealState());
-
-                    abnormalResponses.add(abnormalResponse);
-                }
-
-            }
         response.setCode(ResponseEnum.SUCCESS.getCode());
         response.setMessage(ResponseEnum.SUCCESS.getMessage());
         response.setData(abnormalResponses);

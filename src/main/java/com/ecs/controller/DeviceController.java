@@ -302,7 +302,7 @@ public class DeviceController {
         return "上传成功";
     }
 
-    @ApiOperation(value = "获取最新的设备信息")
+/*    @ApiOperation(value = "获取最新的设备信息")
     @RequestMapping(path = "/latestRunInfo", method = RequestMethod.GET)
     public DeviceState getDeviceStateByDeviceNo(@RequestParam("deviceNo") String deviceNo, @RequestHeader(value="token") String token){
         return deviceService.getDeviceStateBydeviceNo(deviceNo);
@@ -318,6 +318,7 @@ public class DeviceController {
         }
         return deviceStateList;
     }
+ */
 
     /*@ApiOperation(value = "判断手环是否绑定犯人")
     @RequestMapping(path = "/braceletBind", method = RequestMethod.GET)
@@ -346,42 +347,7 @@ public class DeviceController {
     public HttpResponseContent getDeviceCloudGraph(@RequestHeader(value="token") String token) throws Exception {
         String userId = adminService.getUserIdFromToken(token);
         HttpResponseContent response = new HttpResponseContent();
-
-        DeviceCloudGraphResponse deviceCloudGraphResponse = new DeviceCloudGraphResponse();
-        List<CarInfo> carInfos = new ArrayList<>();
-        String commandCarNo = carService.getCommandCarNo();
-        List<String> carNos= carService.getCarNo();
-        for(int i=0;i<carNos.size();i++){
-            String carNo = carNos.get(i);
-            List<DeviceAndRing> deviceAndRingList=new ArrayList<>();
-            CarInfo carInfo = new CarInfo();
-            carInfo.setEscortCarNo(carNo);
-            List<String> userIds = convoyService.getUserIdByCarNo(carNo);
-            for(int j =0; j<userIds.size();j++){
-                DeviceAndRing deviceAndRing = new DeviceAndRing();
-                String user_id = userIds.get(j);
-                String deviceNo = deviceService.getDeviceNoByUserId(user_id);
-                if(deviceNo!=null) {
-                    String deviceType = deviceService.getByDeviceNo(deviceNo).getDeviceType();
-                    String braceletNo = braceletService.getBraceletNoByDeviceNo(deviceNo);
-                    String vervelNo = vervelService.getVervelNoByDeviceNo(deviceNo);
-                    boolean deviceConnectivityStatus = deviceService.getDeviceConnectionByDeviceNo(deviceNo).isDeviceConnectivityStatus();
-
-                    deviceAndRing.setDeviceNo(deviceNo);
-                    deviceAndRing.setDeviceType(deviceType);
-                    deviceAndRing.setDeviceConnectivityStatus(deviceConnectivityStatus);
-                    deviceAndRing.setBraceletNo(braceletNo);
-                    deviceAndRing.setVerlvelNo(vervelNo);
-
-                    deviceAndRingList.add(deviceAndRing);
-                }
-            }
-            carInfo.setDeviceAndRingList(deviceAndRingList);
-            carInfos.add(carInfo);
-        }
-
-        deviceCloudGraphResponse.setCommandCarNo(commandCarNo);
-        deviceCloudGraphResponse.setCarInfoList(carInfos);
+        DeviceCloudGraphResponse deviceCloudGraphResponse = deviceService.getDeviceCloudGraph();
 
         response.setCode(ResponseEnum.SUCCESS.getCode());
         response.setMessage(ResponseEnum.SUCCESS.getMessage());

@@ -3,12 +3,14 @@ package com.ecs.service;
 import com.ecs.mapper.*;
 import com.ecs.model.*;
 import com.ecs.model.Request.DeviceRegisterRequest;
+import com.ecs.model.Response.DeviceCloudGraphResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -23,11 +25,13 @@ public class DeviceService {
     private final DeviceConnectionMapper deviceConnectionMapper;
     private final DeviceGpsMapper deviceGpsMapper;
     private final DeviceStateMapper deviceStateMapper;
+    private final CarMapper carMapper;
+    private final ConvoyMapper convoyMapper;
 
     @Autowired
     public DeviceService(DeviceMapper deviceMapper, UserMapper userMapper, BraceletMapper braceletMapper, VervelMapper vervelMapper,
                           DeviceConnectionMapper deviceConnectionMapper, DeviceGpsMapper deviceGpsMapper,
-                         DeviceStateMapper deviceStateMapper) {
+                         DeviceStateMapper deviceStateMapper,CarMapper carMapper,ConvoyMapper convoyMapper) {
         this.deviceMapper = deviceMapper;
         this.userMapper = userMapper;
         this.braceletMapper = braceletMapper;
@@ -35,6 +39,48 @@ public class DeviceService {
         this.deviceConnectionMapper = deviceConnectionMapper;
         this.deviceGpsMapper = deviceGpsMapper;
         this.deviceStateMapper = deviceStateMapper;
+        this.carMapper = carMapper;
+        this.convoyMapper = convoyMapper;
+    }
+
+    public DeviceCloudGraphResponse getDeviceCloudGraph(){
+        DeviceCloudGraphResponse deviceCloudGraphResponse = new DeviceCloudGraphResponse();
+        List<CarInfo> carInfos = new ArrayList<>();
+        String commandCarNo = carMapper.getCommandCarNo();
+        List<String> carNos= carMapper.getCarNo();
+        for(int i=0;i<carNos.size();i++){
+            String carNo = carNos.get(i);
+            List<DeviceAndRing> deviceAndRingList=new ArrayList<>();
+            CarInfo carInfo = new CarInfo();
+            carInfo.setEscortCarNo(carNo);
+            List<String> userIds = convoyMapper.getUserIdByCarNo(carNo);
+            for(int j =0; j<userIds.size();j++){
+                DeviceAndRing deviceAndRing = new DeviceAndRing();
+                String user_id = userIds.get(j);
+                String deviceNo = deviceMapper.getDeviceNoByUserId(user_id);
+                if(deviceNo!=null) {
+                    String deviceType = deviceMapper.getByDeviceNo(deviceNo).getDeviceType();
+                    String braceletNo = braceletMapper.getBraceletNoByDeviceNo(deviceNo);
+                    String vervelNo = vervelMapper.getVervelNoByDeviceNo(deviceNo);
+                    boolean deviceConnectivityStatus = deviceConnectionMapper.getByDeviceNo(deviceNo).isDeviceConnectivityStatus();
+
+                    deviceAndRing.setDeviceNo(deviceNo);
+                    deviceAndRing.setDeviceType(deviceType);
+                    deviceAndRing.setDeviceConnectivityStatus(deviceConnectivityStatus);
+                    deviceAndRing.setBraceletNo(braceletNo);
+                    deviceAndRing.setVerlvelNo(vervelNo);
+
+                    deviceAndRingList.add(deviceAndRing);
+                }
+            }
+            carInfo.setDeviceAndRingList(deviceAndRingList);
+            carInfos.add(carInfo);
+        }
+
+        deviceCloudGraphResponse.setCommandCarNo(commandCarNo);
+        deviceCloudGraphResponse.setCarInfoList(carInfos);
+
+        return deviceCloudGraphResponse;
     }
 
     public Device getByDeviceNo(String deviceNo) {

@@ -1,13 +1,14 @@
 package com.ecs.service;
 
-import com.ecs.mapper.BraceletMapper;
-import com.ecs.mapper.DeviceMapper;
-import com.ecs.mapper.PrisonerMapper;
-import com.ecs.mapper.UserMapper;
+import com.ecs.mapper.*;
 import com.ecs.model.Prisoner;
+import com.ecs.model.PrisonerHeartBeat;
+import com.ecs.model.PrisonerRisk;
+import com.ecs.model.Response.PrisonerDataResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -22,13 +23,39 @@ public class PrisonerService {
     private final DeviceMapper deviceMapper;
     private final UserMapper userMapper;
     private final BraceletMapper braceletMapper;
+    private final PrisonerHeartBeatMapper prisonerHeartBeatMapper;
+    private final PrisonerRiskMapper prisonerRiskMapper;
 
     @Autowired
-    public PrisonerService(PrisonerMapper prisonerMapper, DeviceMapper deviceMapper, UserMapper userMapper, BraceletMapper braceletMapper) {
+    public PrisonerService(PrisonerMapper prisonerMapper, DeviceMapper deviceMapper, UserMapper userMapper,
+                           BraceletMapper braceletMapper, PrisonerHeartBeatMapper prisonerHeartBeatMapper, PrisonerRiskMapper prisonerRiskMapper) {
         this.prisonerMapper = prisonerMapper;
         this.deviceMapper = deviceMapper;
         this.userMapper = userMapper;
         this.braceletMapper = braceletMapper;
+        this.prisonerHeartBeatMapper = prisonerHeartBeatMapper;
+        this.prisonerRiskMapper = prisonerRiskMapper;
+    }
+
+    public List<PrisonerDataResponse> getAllPrisonerData(){
+        List<PrisonerDataResponse> prisonerDataResponses = new ArrayList<>();
+        List<Prisoner> prisoners = prisonerMapper.getAll();
+        for(int i=0; i<prisoners.size();i++){
+            String prisonerId = prisoners.get(i).getPrisonerId();
+            String prisonerName = prisoners.get(i).getPrisonerName();
+            String photoUrl = prisoners.get(i).getPrisonerPhotoUrl();
+            PrisonerHeartBeat prisonerHeartBeat = prisonerHeartBeatMapper.getLastestHeartbeatByPrisonerId(prisonerId);
+            PrisonerRisk prisonerRisk = prisonerRiskMapper.getByPrisonerId(prisonerId);
+            PrisonerDataResponse prisonerDataResponse = new PrisonerDataResponse();
+
+            prisonerDataResponse.setPrisonerId(prisonerId);
+            prisonerDataResponse.setPrisonerName(prisonerName);
+            prisonerDataResponse.setPhoteUrl(photoUrl);
+            prisonerDataResponse.setHeartBeat(prisonerHeartBeat.getHeartBeat());
+            prisonerDataResponse.setRiskValue(prisonerRisk.getRiskValue());
+            prisonerDataResponses.add(prisonerDataResponse);
+        }
+        return prisonerDataResponses;
     }
 
     public Prisoner getById(String prisonerId) {

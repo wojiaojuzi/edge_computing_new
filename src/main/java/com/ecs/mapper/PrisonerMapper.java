@@ -35,4 +35,7 @@ public interface PrisonerMapper {
 
     @Select("SELECT * FROM prisoner WHERE prisoner_name=#{prisonerName}")
     Prisoner getByPrisonerName(@Param("prisonerName") String prisonerName);
+
+    @Select("SELECT prisoner_name FROM prisoner WHERE prisoner_id = #{prisonerId}")
+    String getPrisonerNameByPrisonerId(@Param("prisonerId")String prisonerId);
 }

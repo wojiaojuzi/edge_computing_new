@@ -49,35 +49,8 @@ public class TaskController {
     @RequestMapping(path = "/getAllEscortData", method = RequestMethod.GET)
     public HttpResponseContent getAllTasks(@RequestHeader(value="token") String token) throws Exception{
         String userId = adminService.getUserIdFromToken(token);
-        //return taskService.getAllTasks();
-        List<EscortDataResponse> escortDataResponses = new ArrayList<>();
-        //List<Task> tasks = taskService.getAllTasks();
-        //for(int i=0;i<tasks.size();i++){
-            List<Car> cars = carService.getAllCars();
-            for(int i =0;i<cars.size();i++) {
-                EscortDataResponse escortDataResponse = new EscortDataResponse();
-                String taskNo = convoyService.getTaskNoByCarNo(cars.get(i).getCarNo());
-                List<String> userIds = convoyService.getUserIdByCarNo(cars.get(i).getCarNo());
-                List<String> userNames = new ArrayList<>();
-                for (int j = 0; j < userIds.size(); j++)
-                    userNames.add(userService.getByUserId(userIds.get(j)).getUserName());
+        List<EscortDataResponse> escortDataResponses = taskService.getAllTasks();
 
-                List<String> prisonerIds = convoyService.getPrisonerIdByCarNo(cars.get(i).getCarNo());
-                System.out.println(prisonerIds);
-                List<String> prisonerNames = new ArrayList<>();
-                for (int j = 0; j < prisonerIds.size(); j++) {
-                    if(prisonerIds.get(i)!=null)
-                        prisonerNames.add(prisonerService.getByPrisonerId(prisonerIds.get(j)).getPrisonerName());
-                }
-                escortDataResponse.setCarNo(cars.get(i).getCarNo());
-                escortDataResponse.setCarType(cars.get(i).getType());
-                escortDataResponse.setTaskNo(taskNo);
-                escortDataResponse.setPoliceNames(userNames);
-                escortDataResponse.setPrisonerNames(prisonerNames);
-
-                escortDataResponses.add(escortDataResponse);
-            }
-        //}
         HttpResponseContent response = new HttpResponseContent();
         response.setCode(ResponseEnum.SUCCESS.getCode());
         response.setMessage(ResponseEnum.SUCCESS.getMessage());
@@ -85,7 +58,7 @@ public class TaskController {
         return response;
     }
 
-    @ApiOperation(value = "获得车辆数量")
+/*    @ApiOperation(value = "获得车辆数量")
     @RequestMapping(path = "/getNumbersOfCars", method = RequestMethod.GET)
     public String getNumbersOfCars(@RequestHeader(value="token") String token) throws Exception{
         String userId = adminService.getUserIdFromToken(token);
@@ -107,6 +80,7 @@ public class TaskController {
         Car car = carService.getCarByCarNo(carNo);
         return car;
     }
+    */
 
     @ApiOperation(value = "获取警察的任务信息（手持机）")
     @RequestMapping(path = "/deviceGetTasks", method = RequestMethod.GET)
@@ -132,23 +106,8 @@ public class TaskController {
     public HttpResponseContent getVideoUrl(@RequestHeader(value="token") String token) throws Exception {
         String user_Id = adminService.getUserIdFromToken(token);
         HttpResponseContent response = new HttpResponseContent();
-        List<Car> cars = carService.getAllCars();
-        List<VideoUrlResponse> videoUrlResponses = new ArrayList<>();
-        for(int i=0;i<cars.size();i++){
-            VideoUrlResponse videoUrlResponse = new VideoUrlResponse();
-            Car car = cars.get(i);
-            CarInner carInner = new CarInner();
-            CarOuter carOuter = new CarOuter();
-            carInner.setCarNo(car.getCarNo());
-            carInner.setCarInnerVideoUrl(car.getCarInnerVideoUrl());
-            carOuter.setCarNo(car.getCarNo());
-            carOuter.setCarOuterVideoUrl(car.getCarOuterVideoUrl());
+        List<VideoUrlResponse> videoUrlResponses = taskService.getVideoUrl();
 
-            videoUrlResponse.setCarInner(carInner);
-            videoUrlResponse.setCarOuter(carOuter);
-
-            videoUrlResponses.add(videoUrlResponse);
-        }
         response.setCode(ResponseEnum.SUCCESS.getCode());
         response.setMessage(ResponseEnum.SUCCESS.getMessage());
         response.setData(videoUrlResponses);
@@ -159,27 +118,6 @@ public class TaskController {
     @RequestMapping(path = "/getRoute", method = RequestMethod.GET)
     public List<Route> getAllRoute(@RequestHeader(value="token") String token) throws Exception{
         return taskService.getAllRoute();
-    }
-
-
-    @ApiOperation(value = "押解任务导入")
-    @RequestMapping(path = "/inputTasks", method = RequestMethod.GET)
-    public HttpResponseContent inputTasks() throws SQLException, ClassNotFoundException {
-        taskService.inputTasks();
-        return null;
-    }
-
-    @ApiOperation(value = "判断有无押解数据")
-    @RequestMapping(path = "/judgeTask", method = RequestMethod.GET)
-    public HttpResponseContent judgeTask(){
-        HttpResponseContent response = new HttpResponseContent();
-
-        response.setCode(200);
-        JudgeTaskResponse judgeTaskResponse = new JudgeTaskResponse();
-        judgeTaskResponse.setHasData("1");
-        judgeTaskResponse.setData("");
-
-        return response;
     }
 
 }

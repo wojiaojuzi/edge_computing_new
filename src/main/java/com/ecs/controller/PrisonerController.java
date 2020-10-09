@@ -31,50 +31,31 @@ public class PrisonerController {
     private final PrisonerService prisonerService;
     private final TaskService taskService;
     private final AdminService adminService;
-    private final UserService userService;
     private final PrisonerDataService prisonerDataService;
 
     @Autowired
-    public PrisonerController(PrisonerService prisonerService, TaskService taskService, AdminService adminService,UserService userService,PrisonerDataService prisonerDataService) {
+    public PrisonerController(PrisonerService prisonerService, TaskService taskService, AdminService adminService,PrisonerDataService prisonerDataService) {
         this.prisonerService = prisonerService;
         this.taskService = taskService;
         this.adminService = adminService;
-        this.userService = userService;
         this.prisonerDataService = prisonerDataService;
     }
 
 
 
-    @ApiOperation(value = "获取单个犯人信息")
+/*    @ApiOperation(value = "获取单个犯人信息")
     @RequestMapping(path = "/get", method = RequestMethod.GET)
     public Prisoner getById(@RequestParam("prisonerId") String prisonerId,@RequestHeader(value="token") String token) throws Exception{
         String userId = adminService.getUserIdFromToken(token);
         return prisonerService.getById(prisonerId);
-    }
+    }*/
 
     @ApiOperation(value = "获取所有犯人信息")
     @RequestMapping(path = "/getAllPrisonerData", method = RequestMethod.GET)
     public HttpResponseContent getAllPrisonerData(@RequestHeader(value="token") String token) throws Exception{
         String adminId = adminService.getUserIdFromToken(token);
-        List<PrisonerDataResponse> prisonerDataResponses = new ArrayList<>();
-        List<Prisoner> prisoners = prisonerService.getAll();
-        for(int i=0; i<prisoners.size();i++){
-            String prisonerId = prisoners.get(i).getPrisonerId();
-            String prisonerName = prisoners.get(i).getPrisonerName();
-            String photoUrl = prisoners.get(i).getPrisonerPhotoUrl();
-            PrisonerHeartBeat prisonerHeartBeat = prisonerDataService.getLastestHeartbeat(prisonerId);
-            PrisonerRisk prisonerRisk = prisonerDataService.getLatestRisk(prisonerId);
-            PrisonerDataResponse prisonerDataResponse = new PrisonerDataResponse();
-            //prisonerDataResponse.setPrisoner(prisoners.get(i));
-            //prisonerDataResponse.setHeartBeat(prisonerHeartBeat);
-            //prisonerDataResponse.setPrisonerRisk(prisonerRisk);
-            prisonerDataResponse.setPrisonerId(prisonerId);
-            prisonerDataResponse.setPrisonerName(prisonerName);
-            prisonerDataResponse.setPhoteUrl(photoUrl);
-            prisonerDataResponse.setHeartBeat(prisonerHeartBeat.getHeartBeat());
-            prisonerDataResponse.setRiskValue(prisonerRisk.getRiskValue());
-            prisonerDataResponses.add(prisonerDataResponse);
-        }
+        List<PrisonerDataResponse> prisonerDataResponses = prisonerService.getAllPrisonerData();
+
         HttpResponseContent response = new HttpResponseContent();
         response.setCode(ResponseEnum.SUCCESS.getCode());
         response.setMessage(ResponseEnum.SUCCESS.getMessage());

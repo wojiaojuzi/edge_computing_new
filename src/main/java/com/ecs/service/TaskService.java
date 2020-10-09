@@ -2,11 +2,14 @@ package com.ecs.service;
 
 import com.ecs.mapper.*;
 import com.ecs.model.*;
+import com.ecs.model.Response.EscortDataResponse;
+import com.ecs.model.Response.VideoUrlResponse;
 import com.ecs.utils.SqlUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -21,10 +24,11 @@ public class TaskService {
     private final PrisonerMapper prisonerMapper;
     private final BraceletMapper braceletMapper;
     private final RouteMapper routeMapper;
+    private final ConvoyMapper convoyMapper;
 
     @Autowired
     public TaskService(UserMapper userMapper, CarMapper carMapper, TaskMapper taskMapper, DeviceMapper deviceMapper,
-                       PrisonerMapper prisonerMapper, BraceletMapper braceletMapper, RouteMapper routeMapper) {
+                       PrisonerMapper prisonerMapper, BraceletMapper braceletMapper, RouteMapper routeMapper, ConvoyMapper convoyMapper) {
         this.userMapper = userMapper;
         this.carMapper = carMapper;
         this.taskMapper = taskMapper;
@@ -32,6 +36,7 @@ public class TaskService {
         this.prisonerMapper = prisonerMapper;
         this.braceletMapper = braceletMapper;
         this.routeMapper = routeMapper;
+        this.convoyMapper = convoyMapper;
     }
     //    public List<User> getByTaskNo(String taskNo){
 //        return userMapper.getByTaskNo(taskNo);
@@ -49,11 +54,60 @@ public class TaskService {
 //        return userMapper.getMembersByCarNo(carNo);
 //    }
 
+    public List<VideoUrlResponse> getVideoUrl(){
+        List<Car> cars = carMapper.getAll();
+        List<VideoUrlResponse> videoUrlResponses = new ArrayList<>();
+        for(int i=0;i<cars.size();i++){
+            VideoUrlResponse videoUrlResponse = new VideoUrlResponse();
+            Car car = cars.get(i);
+            CarInner carInner = new CarInner();
+            CarOuter carOuter = new CarOuter();
+            carInner.setCarNo(car.getCarNo());
+            carInner.setCarInnerVideoUrl(car.getCarInnerVideoUrl());
+            carOuter.setCarNo(car.getCarNo());
+            carOuter.setCarOuterVideoUrl(car.getCarOuterVideoUrl());
+
+            videoUrlResponse.setCarInner(carInner);
+            videoUrlResponse.setCarOuter(carOuter);
+
+            videoUrlResponses.add(videoUrlResponse);
+        }
+        return videoUrlResponses;
+    }
+
+    public List<EscortDataResponse> getAllTasks(){
+        List<EscortDataResponse> escortDataResponses = new ArrayList<>();
+
+        List<Car> cars = carMapper.getAll();
+        for(int i =0;i<cars.size();i++) {
+            EscortDataResponse escortDataResponse = new EscortDataResponse();
+            String taskNo = convoyMapper.getTaskNoByCarNo(cars.get(i).getCarNo());
+            List<String> userIds = convoyMapper.getUserIdByCarNo(cars.get(i).getCarNo());
+            List<String> userNames = new ArrayList<>();
+            for (int j = 0; j < userIds.size(); j++)
+                userNames.add(userMapper.getByUserId(userIds.get(j)).getUserName());
+
+            List<String> prisonerIds = convoyMapper.getPrisonerIdByCarNo(cars.get(i).getCarNo());
+            System.out.println(prisonerIds);
+            List<String> prisonerNames = new ArrayList<>();
+            for (int j = 0; j < prisonerIds.size(); j++) {
+                if(prisonerIds.get(i)!=null)
+                    prisonerNames.add(prisonerMapper.getByPrisonerId(prisonerIds.get(j)).getPrisonerName());
+            }
+            escortDataResponse.setCarNo(cars.get(i).getCarNo());
+            escortDataResponse.setCarType(cars.get(i).getType());
+            escortDataResponse.setTaskNo(taskNo);
+            escortDataResponse.setPoliceNames(userNames);
+            escortDataResponse.setPrisonerNames(prisonerNames);
+
+            escortDataResponses.add(escortDataResponse);
+        }
+        return escortDataResponses;
+    }
+
     public Task getTask(String TaskNo){
         return taskMapper.getByTaskNo(TaskNo);
     }
-
-    public List<Task> getAllTasks(){ return taskMapper.getAllTasks(); }
 
     public Task getPrisonerCar(String prisonerName){
         return taskMapper.getByPrisonerName(prisonerName);
@@ -63,28 +117,7 @@ public class TaskService {
         return taskMapper.getByUserName(userName);
     }
 
-    /*public String getPrisonerNameByUserName(String userName){
-        //从username获取其id，获取设备NO，判断bracelet表中是否含有，如果有取烦人id，
-        // 再取烦人名字
-        String id = userMapper.getByUserName(userName).getId();
-        System.out.println(id);
-//        Device device = deviceMapper.getByUid(id);  //加入一体机之后会有两个值
-        List<Device> devices = deviceMapper.getByUid(id);
-//        System.out.println(device);
-        String deviceNo = devices.get(0).getDeviceNo();
-        Bracelet bracelet = braceletMapper.getBraceletByDeviceNo(deviceNo);
-        if(bracelet != null){
-            String prisonerName = prisonerMapper.getByPrisonerId(bracelet.getPrisonerId()).getPrisonerName();
-            return prisonerName;
-        }
-        return null;
-    }
 
-    public String getPrisonerIdByUserId(String userId){
-        String userName = userMapper.getByUserId(userId).getUserName();
-        String prisonerName = taskMapper.getByUserName(userName).getPrisonerName();
-        return prisonerMapper.getByPrisonerName(prisonerName).getPrisonerId();
-    }*/
 
     public List<Route> getAllRoute(){
         return routeMapper.getAllRoute();
@@ -93,9 +126,5 @@ public class TaskService {
     public void inputTasks() throws SQLException, ClassNotFoundException {
         SqlUtil.mybatisExec2();
         SqlUtil.mybatisExec1();
-    }
-
-    public void dbTest() {
-        //deviceMapper.getAll();
     }
 }
