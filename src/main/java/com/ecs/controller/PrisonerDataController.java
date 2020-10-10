@@ -157,15 +157,26 @@ public class PrisonerDataController {
         List<CarGpsResponse> carGpsResponses = new ArrayList<>();
         List<Car> cars = carService.getAllCars();
         for(int i = 0; i < cars.size(); i++){
-            List<Convoy> convoys = convoyService.getNoRepeat(cars.get(i).getCarNo());
+            List<Convoy> convoys = convoyService.getByCarNo(cars.get(i).getCarNo());
             CarGpsResponse carGpsResponse = new CarGpsResponse();
-            carGpsResponse.setCar(cars.get(i));
+            //carGpsResponse.setDeviceGpsList(new ArrayList<>());
+            //carGpsResponse.setCar(cars.get(i));
+            carGpsResponse.setCarNo(cars.get(i).getCarNo());
+            carGpsResponse.setCarType(cars.get(i).getType());
+            carGpsResponse.setColor(cars.get(i).getColor());
             carGpsResponse.setTaskNo(convoys.get(0).getTaskNo());
             for(int j=0;j<convoys.size();j++){
                 String user_id = convoys.get(j).getUserId();
-                String device_no = deviceService.getByUserId(user_id).getUserId();
-                DeviceGps deviceGps = deviceService.getDeviceGpsBydeviceNo(device_no);
-                carGpsResponse.getDeviceGpsList().add(deviceGps);
+                DeviceGps deviceGps = null;
+                if(deviceService.getByUserId(user_id)!=null) {
+                    String device_no = deviceService.getByUserId(user_id).getDeviceNo();
+                    deviceGps = deviceService.getDeviceGpsBydeviceNo(device_no);
+                    if(deviceGps!=null){
+                        carGpsResponse.setHeight(deviceGps.getHeight());
+                        carGpsResponse.setLongitude(deviceGps.getLongitude());
+                        carGpsResponse.setLatitude(deviceGps.getLatitude());
+                    }
+                }
             }
 
 
@@ -181,15 +192,27 @@ public class PrisonerDataController {
         List<CarGpsResponse> carGpsResponses = new ArrayList<>();
         List<Car> cars = carService.getAllCars();
         for(int i = 0; i < cars.size(); i++){
-            List<Convoy> convoys = convoyService.getNoRepeat(cars.get(i).getCarNo());
+            List<Convoy> convoys = convoyService.getByCarNo(cars.get(i).getCarNo());
             CarGpsResponse carGpsResponse = new CarGpsResponse();
-            carGpsResponse.setCar(cars.get(i));
+            //List<DeviceGps> deviceGpsList = new ArrayList<>();
+            carGpsResponse.setCarNo(cars.get(i).getCarNo());
+            carGpsResponse.setCarType(cars.get(i).getType());
+            carGpsResponse.setColor(cars.get(i).getColor());
             carGpsResponse.setTaskNo(convoys.get(0).getTaskNo());
+
             for(int j=0;j<convoys.size();j++){
                 String user_id = convoys.get(j).getUserId();
-                String device_no = deviceService.getByUserId(user_id).getUserId();
-                DeviceGps deviceGps = deviceService.getDeviceGpsBydeviceNo(device_no);
-                carGpsResponse.getDeviceGpsList().add(deviceGps);
+                DeviceGps deviceGps = null;
+                if(deviceService.getByUserId(user_id)!=null) {
+                    String device_no = deviceService.getByUserId(user_id).getDeviceNo();
+                    deviceGps = deviceService.getDeviceGpsBydeviceNo(device_no);
+                    if(deviceGps!=null){
+                        carGpsResponse.setHeight(deviceGps.getHeight());
+                        carGpsResponse.setLongitude(deviceGps.getLongitude());
+                        carGpsResponse.setLatitude(deviceGps.getLatitude());
+                        break;
+                    }
+                }
             }
 
 

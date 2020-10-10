@@ -16,6 +16,9 @@ public interface ConvoyMapper {
     @Select("select distinct * from convoy where car_no=#{carNo} group by car_no")
     List<Convoy> getNoRepeat(@Param("carNo")String carNo);
 
+    @Select("SELECT * FROM convoy WHERE car_no = #{carNo}")
+    List<Convoy> getByCarNo(@Param("carNo")String carNo);
+
     @Select("SELECT distinct car_no FROM convoy WHERE task_no=#{taskNo}")
     List<String> getCarNoByTaskNo(@Param("taskNo")String TaskNo);
 

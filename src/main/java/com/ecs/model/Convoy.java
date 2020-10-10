@@ -68,4 +68,16 @@ public class Convoy {
     public void setAdminId(String adminId) {
         this.adminId = adminId;
     }
+
+    @Override
+    public String toString() {
+        return "Convoy{" +
+                "id='" + id + '\'' +
+                ", taskNo='" + taskNo + '\'' +
+                ", userId='" + userId + '\'' +
+                ", carNo='" + carNo + '\'' +
+                ", prisonerId='" + prisonerId + '\'' +
+                ", adminId='" + adminId + '\'' +
+                '}';
+    }
 }

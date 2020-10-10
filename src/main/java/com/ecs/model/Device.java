@@ -39,4 +39,13 @@ public class Device {
     public void setUserId(String userId) {
         this.userId = userId;
     }
+
+    @Override
+    public String toString() {
+        return "Device{" +
+                "deviceNo='" + deviceNo + '\'' +
+                ", deviceType='" + deviceType + '\'' +
+                ", userId='" + userId + '\'' +
+                '}';
+    }
 }

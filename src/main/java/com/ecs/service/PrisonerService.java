@@ -5,10 +5,13 @@ import com.ecs.model.Prisoner;
 import com.ecs.model.PrisonerHeartBeat;
 import com.ecs.model.PrisonerRisk;
 import com.ecs.model.Response.PrisonerDataResponse;
+import com.ecs.model.Response.PrisonerRiskDataResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -18,7 +21,7 @@ import java.util.List;
  */
 @Service
 public class PrisonerService {
-
+    private static final String mysqlSdfPatternString = "yyyy-MM-dd HH:mm:ss";
     private final PrisonerMapper prisonerMapper;
     private final DeviceMapper deviceMapper;
     private final UserMapper userMapper;
@@ -58,9 +61,24 @@ public class PrisonerService {
         return prisonerDataResponses;
     }
 
-    public Prisoner getById(String prisonerId) {
-        return prisonerMapper.getByPrisonerId(prisonerId);
+    public PrisonerRiskDataResponse getPrisonerRiskValue(String prisonerId){
+        SimpleDateFormat mysqlSdf = new SimpleDateFormat(mysqlSdfPatternString);
+        Date now = new Date();
+        String createAt = mysqlSdf.format(now);
+        PrisonerRiskDataResponse prisonerRiskDataResponse = new PrisonerRiskDataResponse();
+        PrisonerRisk prisonerRisk = prisonerRiskMapper.getByPrisonerId(prisonerId);
+        String riskValue=null;
+        if(prisonerRisk!=null)
+            riskValue = prisonerRisk.getRiskValue();
+        prisonerRiskDataResponse.setPrisonerId(prisonerId);
+        prisonerRiskDataResponse.setRiskValueOfEnvironment("20");
+        prisonerRiskDataResponse.setRiskValueOfVideo("40");
+        prisonerRiskDataResponse.setTotalRiskValue("60");
+        prisonerRiskDataResponse.setCreateAt(createAt);
+
+        return prisonerRiskDataResponse;
     }
+
 
     public List<Prisoner> getAll() {
         return prisonerMapper.getAll();

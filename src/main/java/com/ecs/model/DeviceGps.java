@@ -68,4 +68,16 @@ public class DeviceGps {
     public void setHeight(String height) {
         this.height = height;
     }
+
+    @Override
+    public String toString() {
+        return "DeviceGps{" +
+                "id='" + id + '\'' +
+                ", latitude='" + latitude + '\'' +
+                ", longitude='" + longitude + '\'' +
+                ", createAt='" + createAt + '\'' +
+                ", deviceNo='" + deviceNo + '\'' +
+                ", height='" + height + '\'' +
+                '}';
+    }
 }

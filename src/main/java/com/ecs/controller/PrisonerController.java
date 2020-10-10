@@ -5,6 +5,7 @@ import com.ecs.model.PrisonerHeartBeat;
 import com.ecs.model.PrisonerRisk;
 import com.ecs.model.Response.HttpResponseContent;
 import com.ecs.model.Response.PrisonerDataResponse;
+import com.ecs.model.Response.PrisonerRiskDataResponse;
 import com.ecs.model.Response.ResponseEnum;
 import com.ecs.model.Task;
 import com.ecs.service.*;
@@ -62,6 +63,19 @@ public class PrisonerController {
         response.setData(prisonerDataResponses);
         return response;
     }
+    @ApiOperation(value = "获取当前犯人风险值")
+    @RequestMapping(path = "/getPrisonerRiskValue", method = RequestMethod.GET)
+    public HttpResponseContent getPrisonerRiskValue(@RequestParam("prisonerId")String prisonerId,
+                                                    @RequestHeader(value="token") String token) throws Exception {
+        String adminId = adminService.getUserIdFromToken(token);
+        PrisonerRiskDataResponse prisonerDataResponses = prisonerService.getPrisonerRiskValue(prisonerId);
+        HttpResponseContent response = new HttpResponseContent();
+        response.setCode(ResponseEnum.SUCCESS.getCode());
+        response.setMessage(ResponseEnum.SUCCESS.getMessage());
+        response.setData(prisonerDataResponses);
+        return response;
+    }
+
 
 
 }

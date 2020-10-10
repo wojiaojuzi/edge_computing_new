@@ -27,6 +27,10 @@ public class ConvoyService {
         return convoyMapper.getNoRepeat(carNo);
     }
 
+    public List<Convoy> getByCarNo(String carNo){
+        return convoyMapper.getByCarNo(carNo);
+    }
+
     public List<String> getCarNoByTaskNo(String taskNo){
         return convoyMapper.getCarNoByTaskNo(taskNo);
     }
