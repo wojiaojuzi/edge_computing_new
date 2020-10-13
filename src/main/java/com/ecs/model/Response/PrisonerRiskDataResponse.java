@@ -1,5 +1,7 @@
 package com.ecs.model.Response;
 
+import java.sql.Timestamp;
+
 public class PrisonerRiskDataResponse {
     private String prisonerId;
 
@@ -9,7 +11,7 @@ public class PrisonerRiskDataResponse {
 
     private String totalRiskValue;
 
-    private String createAt;
+    private Timestamp createAt;
 
     public String getPrisonerId() {
         return prisonerId;
@@ -43,11 +45,11 @@ public class PrisonerRiskDataResponse {
         this.totalRiskValue = totalRiskValue;
     }
 
-    public String getCreateAt() {
+    public Timestamp getCreateAt() {
         return createAt;
     }
 
-    public void setCreateAt(String createAt) {
+    public void setCreateAt(Timestamp createAt) {
         this.createAt = createAt;
     }
 }

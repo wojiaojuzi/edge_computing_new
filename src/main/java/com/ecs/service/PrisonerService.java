@@ -9,6 +9,7 @@ import com.ecs.model.Response.PrisonerRiskDataResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -84,7 +85,7 @@ public class PrisonerService {
             prisonerRiskDataResponse.setTotalRiskValue(String.valueOf(TotalRiskValue));
 
             Date date = new Date(now.getTime()-9000+i*1000);
-            prisonerRiskDataResponse.setCreateAt(mysqlSdf.format(date));
+            prisonerRiskDataResponse.setCreateAt(new Timestamp(date.getTime()));
 
             prisonerRiskDataResponses.add(prisonerRiskDataResponse);
         }
