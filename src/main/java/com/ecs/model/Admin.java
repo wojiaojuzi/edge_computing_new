@@ -37,7 +37,7 @@ public class Admin {
     private String email;
 
     @ApiModelProperty(value = "相片地址")
-    private String adminPhotoUri;
+    private String adminPhotoUrl;
 
     public String getAdminId() {
         return adminId;
@@ -119,11 +119,11 @@ public class Admin {
         this.email = email;
     }
 
-    public String getAdminPhotoUri() {
-        return adminPhotoUri;
+    public String getAdminPhotoUrl() {
+        return adminPhotoUrl;
     }
 
-    public void setAdminPhotoUri(String adminPhotoUri) {
-        this.adminPhotoUri = adminPhotoUri;
+    public void setAdminPhotoUrl(String adminPhotoUrl) {
+        this.adminPhotoUrl = adminPhotoUrl;
     }
 }

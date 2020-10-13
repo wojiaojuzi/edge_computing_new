@@ -30,4 +30,7 @@ public interface ConvoyMapper {
 
     @Select("SELECT prisoner_id FROM convoy WHERE car_no=#{carNo}")
     List<String> getPrisonerIdByCarNo(@Param("carNo")String carNo);
+
+    @Select("SELECT prisoner_id FROM convoy WHERE user_id = #{userId}")
+    String getPrisonerIdByUserId(@Param("userId")String userId);
 }

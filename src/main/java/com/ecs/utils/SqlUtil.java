@@ -20,19 +20,19 @@ public class SqlUtil {
         mybatisExec();
     }*/
 
-    public static void mybatisExec1() throws ClassNotFoundException, SQLException {
+    public static void mybatisExec(File file) throws ClassNotFoundException, SQLException {
         Class.forName(driver);
         Connection conn = DriverManager.getConnection(url, username, password);
         ScriptRunner runner = new ScriptRunner(conn);
         try {
             runner.setStopOnError(true);
-            runner.runScript(new FileReader(file1));
+            runner.runScript(new FileReader(file));
         } catch (Exception e) {
             e.printStackTrace();
         }
         conn.close();
     }
-    public static void mybatisExec2() throws ClassNotFoundException, SQLException {
+    /*public static void mybatisExec2() throws ClassNotFoundException, SQLException {
         Class.forName(driver);
         Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/", username, password);
         ScriptRunner runner = new ScriptRunner(conn);
@@ -43,6 +43,6 @@ public class SqlUtil {
             e.printStackTrace();
         }
         conn.close();
-    }
+    }*/
 
 }

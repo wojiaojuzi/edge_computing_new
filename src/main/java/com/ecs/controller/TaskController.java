@@ -32,17 +32,19 @@ public class TaskController {
     private final UserService userService;
     private final ConvoyService convoyService;
     private final CarService carService;
+    private final DeviceService deviceService;
 
     @Autowired
     public TaskController(TaskService taskService, PrisonerService prisonerService,
                           AdminService adminService, UserService userService, ConvoyService convoyService,
-                          CarService carService) {
+                          CarService carService, DeviceService deviceService) {
         this.taskService = taskService;
         this.prisonerService = prisonerService;
         this.adminService = adminService;
         this.userService = userService;
         this.convoyService = convoyService;
         this.carService = carService;
+        this.deviceService = deviceService;
     }
 
     @ApiOperation(value = "获取全部任务")
@@ -55,6 +57,16 @@ public class TaskController {
         response.setCode(ResponseEnum.SUCCESS.getCode());
         response.setMessage(ResponseEnum.SUCCESS.getMessage());
         response.setData(escortDataResponses);
+        return response;
+    }
+
+    @ApiOperation(value = "获取数据库状态")
+    @RequestMapping(path = "/getDataBaseStatus", method = RequestMethod.GET)
+    public HttpResponseContent getDataBaseStatus(){
+        HttpResponseContent response = new HttpResponseContent();
+        response.setCode(ResponseEnum.SUCCESS.getCode());
+        response.setMessage(ResponseEnum.SUCCESS.getMessage());
+        response.setData(taskService.getDataBaseStatus());
         return response;
     }
 
@@ -114,10 +126,67 @@ public class TaskController {
         return response;
     }
 
+    @ApiOperation(value = "押解任务导入")
+    @RequestMapping(path = "/inputTasks", method = RequestMethod.GET)
+    public HttpResponseContent inputTasks() throws SQLException, ClassNotFoundException {
+        taskService.inputTasks();
+        return null;
+    }
+
+    @ApiOperation(value = "判断有无押解数据")
+    @RequestMapping(path = "/hasData", method = RequestMethod.GET)
+    public HttpResponseContent hasData(){
+        System.out.println("hasData");
+        HttpResponseContent response = new HttpResponseContent();
+
+        response.setCode(ResponseEnum.SUCCESS.getCode());
+        response.setMessage(ResponseEnum.SUCCESS.getMessage());
+
+        response.setData(taskService.getDataBaseStatus());
+
+        return response;
+    }
+
     @ApiOperation(value = "获取路线信息")
-    @RequestMapping(path = "/getRoute", method = RequestMethod.GET)
+    @RequestMapping(path = "/getCarRoute", method = RequestMethod.GET)
     public List<Route> getAllRoute(@RequestHeader(value="token") String token) throws Exception{
         return taskService.getAllRoute();
+    }
+
+    @ApiOperation(value = "（前端轨迹展示）获取全部GPS数据")
+    @RequestMapping(path = "/getCarGPS", method = RequestMethod.GET)
+    public List<CarGpsResponse> getAllGps2(@RequestHeader(value="token") String token) throws Exception{
+        String userId = adminService.getUserIdFromToken(token);
+        List<CarGpsResponse> carGpsResponses = new ArrayList<>();
+        List<Car> cars = carService.getAllCars();
+        for(int i = 0; i < cars.size(); i++){
+            List<Convoy> convoys = convoyService.getByCarNo(cars.get(i).getCarNo());
+            CarGpsResponse carGpsResponse = new CarGpsResponse();
+            //List<DeviceGps> deviceGpsList = new ArrayList<>();
+            carGpsResponse.setCarNo(cars.get(i).getCarNo());
+            carGpsResponse.setCarType(cars.get(i).getType());
+            carGpsResponse.setColor(cars.get(i).getColor());
+            carGpsResponse.setTaskNo(convoys.get(0).getTaskNo());
+
+            for(int j=0;j<convoys.size();j++){
+                String user_id = convoys.get(j).getUserId();
+                DeviceGps deviceGps = null;
+                if(deviceService.getByUserId(user_id)!=null) {
+                    String device_no = deviceService.getByUserId(user_id).getDeviceNo();
+                    deviceGps = deviceService.getDeviceGpsBydeviceNo(device_no);
+                    if(deviceGps!=null){
+                        carGpsResponse.setHeight(deviceGps.getHeight());
+                        carGpsResponse.setLongitude(deviceGps.getLongitude());
+                        carGpsResponse.setLatitude(deviceGps.getLatitude());
+                        break;
+                    }
+                }
+            }
+
+
+            carGpsResponses.add(carGpsResponse);
+        }
+        return carGpsResponses;
     }
 
 }

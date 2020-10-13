@@ -27,11 +27,12 @@ public class DeviceService {
     private final DeviceStateMapper deviceStateMapper;
     private final CarMapper carMapper;
     private final ConvoyMapper convoyMapper;
+    private final PrisonerMapper prisonerMapper;
 
     @Autowired
     public DeviceService(DeviceMapper deviceMapper, UserMapper userMapper, BraceletMapper braceletMapper, VervelMapper vervelMapper,
                           DeviceConnectionMapper deviceConnectionMapper, DeviceGpsMapper deviceGpsMapper,
-                         DeviceStateMapper deviceStateMapper,CarMapper carMapper,ConvoyMapper convoyMapper) {
+                         DeviceStateMapper deviceStateMapper,CarMapper carMapper,ConvoyMapper convoyMapper,PrisonerMapper prisonerMapper) {
         this.deviceMapper = deviceMapper;
         this.userMapper = userMapper;
         this.braceletMapper = braceletMapper;
@@ -41,6 +42,7 @@ public class DeviceService {
         this.deviceStateMapper = deviceStateMapper;
         this.carMapper = carMapper;
         this.convoyMapper = convoyMapper;
+        this.prisonerMapper = prisonerMapper;
     }
 
     public DeviceCloudGraphResponse getDeviceCloudGraph(){
@@ -57,18 +59,25 @@ public class DeviceService {
             for(int j =0; j<userIds.size();j++){
                 DeviceAndRing deviceAndRing = new DeviceAndRing();
                 String user_id = userIds.get(j);
+                String userName = userMapper.getUserNameByUserId(user_id);
                 String deviceNo = deviceMapper.getDeviceNoByUserId(user_id);
+                String taskNo = convoyMapper.getConvoyByUserId(user_id).getTaskNo();
+                String prisonerId = convoyMapper.getPrisonerIdByUserId(user_id);
+                String prisonerName = prisonerMapper.getPrisonerNameByPrisonerId(prisonerId);
                 if(deviceNo!=null) {
                     String deviceType = deviceMapper.getByDeviceNo(deviceNo).getDeviceType();
                     String braceletNo = braceletMapper.getBraceletNoByDeviceNo(deviceNo);
                     String vervelNo = vervelMapper.getVervelNoByDeviceNo(deviceNo);
                     boolean deviceConnectivityStatus = deviceConnectionMapper.getByDeviceNo(deviceNo).isDeviceConnectivityStatus();
-
+                    deviceAndRing.setUserName(userName);
+                    deviceAndRing.setDeviceName(deviceType+deviceNo);
+                    deviceAndRing.setTaskNo(taskNo);
+                    deviceAndRing.setPrisonerName(prisonerName);
                     deviceAndRing.setDeviceNo(deviceNo);
                     deviceAndRing.setDeviceType(deviceType);
                     deviceAndRing.setDeviceConnectivityStatus(deviceConnectivityStatus);
                     deviceAndRing.setBraceletNo(braceletNo);
-                    deviceAndRing.setVerlvelNo(vervelNo);
+                    deviceAndRing.setVervelNo(vervelNo);
 
                     deviceAndRingList.add(deviceAndRing);
                 }

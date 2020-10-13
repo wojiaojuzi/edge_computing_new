@@ -30,4 +30,12 @@ public interface TaskMapper {
     @Select("SELECT car_no FROM task WHERE prisoner_name=#{prisonerName};")
     String getCarNoByPrisonerName(@Param("prisonerName") String prisonerName);
 
+    @Select("SELECT count(SCHEMA_NAME) as SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME=#{SCHEMA_NAME}")
+    Integer getSchemaStatus(@Param("SCHEMA_NAME")String SCHEMA_NAME);
+
+    @Select("select count(table_name) from information_schema.TABLES where TABLE_NAME = #{tableName} and TABLE_SCHEMA = #{SCHEMA_NAME}")
+    Integer getTableStatus(@Param("tableName")String tableName,@Param("SCHEMA_NAME")String SCHEMA_NAME);
+
+    @Select("SELECT count(task_no) FROM task")
+    Integer getTaskNumber();
 }

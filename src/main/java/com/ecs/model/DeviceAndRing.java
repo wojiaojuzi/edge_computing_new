@@ -3,13 +3,21 @@ package com.ecs.model;
 public class DeviceAndRing {
     private String deviceNo;
 
+    private String deviceName;
+
+    private String userName;
+
+    private String taskNo;
+
+    private String prisonerName;
+
     private String deviceType;
 
     private boolean deviceConnectivityStatus;
 
     private String braceletNo;
 
-    private String verlvelNo;
+    private String vervelNo;
 
     public String getDeviceNo() {
         return deviceNo;
@@ -17,6 +25,38 @@ public class DeviceAndRing {
 
     public void setDeviceNo(String deviceNo) {
         this.deviceNo = deviceNo;
+    }
+
+    public String getDeviceName() {
+        return deviceName;
+    }
+
+    public void setDeviceName(String deviceName) {
+        this.deviceName = deviceName;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
+    public String getTaskNo() {
+        return taskNo;
+    }
+
+    public void setTaskNo(String taskNo) {
+        this.taskNo = taskNo;
+    }
+
+    public String getPrisonerName() {
+        return prisonerName;
+    }
+
+    public void setPrisonerName(String prisonerName) {
+        this.prisonerName = prisonerName;
     }
 
     public String getDeviceType() {
@@ -43,11 +83,11 @@ public class DeviceAndRing {
         this.braceletNo = braceletNo;
     }
 
-    public String getVerlvelNo() {
-        return verlvelNo;
+    public String getVervelNo() {
+        return vervelNo;
     }
 
-    public void setVerlvelNo(String verlvelNo) {
-        this.verlvelNo = verlvelNo;
+    public void setVervelNo(String vervelNo) {
+        this.vervelNo = vervelNo;
     }
 }

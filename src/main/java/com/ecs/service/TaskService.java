@@ -8,6 +8,7 @@ import com.ecs.utils.SqlUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -123,8 +124,30 @@ public class TaskService {
         return routeMapper.getAllRoute();
     }
 
+    public boolean getDataBaseStatus(){
+        System.out.println(taskMapper.getSchemaStatus("edge_computing_service"));
+        System.out.println(taskMapper.getTableStatus("task","edge_computing_service"));
+        System.out.println(taskMapper.getTaskNumber());
+        if(taskMapper.getSchemaStatus("edge_computing_service")==0)
+            return false;
+        else{
+            if(taskMapper.getTableStatus("task","edge_computing_service")==0)
+                return false;
+            else{
+                if(taskMapper.getTaskNumber()==0)
+                    return false;
+            }
+        }
+
+
+        return true;
+    }
+
     public void inputTasks() throws SQLException, ClassNotFoundException {
-        SqlUtil.mybatisExec2();
-        SqlUtil.mybatisExec1();
+        File file1 = new File("/media/guoxidong/TEST/edge_computing_service.sql");
+        File file2 = new File("/media/guoxidong/TEST/first.sql");
+        //SqlUtil.mybatisExec2();
+        SqlUtil.mybatisExec(file2);
+        SqlUtil.mybatisExec(file1);
     }
 }
