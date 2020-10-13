@@ -154,7 +154,7 @@ public class TaskController {
     }
 
     @ApiOperation(value = "（前端轨迹展示）获取全部GPS数据")
-    @RequestMapping(path = "/getCarGPS", method = RequestMethod.GET)
+    @RequestMapping(path = "/getCarGps", method = RequestMethod.GET)
     public List<CarGpsResponse> getAllGps2(@RequestHeader(value="token") String token) throws Exception{
         String userId = adminService.getUserIdFromToken(token);
         List<CarGpsResponse> carGpsResponses = new ArrayList<>();

@@ -68,7 +68,7 @@ public class PrisonerController {
     public HttpResponseContent getPrisonerRiskValue(@RequestParam("prisonerId")String prisonerId,
                                                     @RequestHeader(value="token") String token) throws Exception {
         String adminId = adminService.getUserIdFromToken(token);
-        PrisonerRiskDataResponse prisonerDataResponses = prisonerService.getPrisonerRiskValue(prisonerId);
+        List<PrisonerRiskDataResponse> prisonerDataResponses = prisonerService.getPrisonerRiskValue(prisonerId);
         HttpResponseContent response = new HttpResponseContent();
         response.setCode(ResponseEnum.SUCCESS.getCode());
         response.setMessage(ResponseEnum.SUCCESS.getMessage());

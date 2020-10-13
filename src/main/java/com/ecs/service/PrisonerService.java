@@ -13,6 +13,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Random;
 
 /**
  * @Author: jojo
@@ -61,22 +62,34 @@ public class PrisonerService {
         return prisonerDataResponses;
     }
 
-    public PrisonerRiskDataResponse getPrisonerRiskValue(String prisonerId){
+    public List<PrisonerRiskDataResponse> getPrisonerRiskValue(String prisonerId){
         SimpleDateFormat mysqlSdf = new SimpleDateFormat(mysqlSdfPatternString);
         Date now = new Date();
         String createAt = mysqlSdf.format(now);
-        PrisonerRiskDataResponse prisonerRiskDataResponse = new PrisonerRiskDataResponse();
-        PrisonerRisk prisonerRisk = prisonerRiskMapper.getByPrisonerId(prisonerId);
-        String riskValue=null;
-        if(prisonerRisk!=null)
-            riskValue = prisonerRisk.getRiskValue();
-        prisonerRiskDataResponse.setPrisonerId(prisonerId);
-        prisonerRiskDataResponse.setRiskValueOfEnvironment("20");
-        prisonerRiskDataResponse.setRiskValueOfVideo("40");
-        prisonerRiskDataResponse.setTotalRiskValue("60");
-        prisonerRiskDataResponse.setCreateAt(createAt);
+        List<PrisonerRiskDataResponse> prisonerRiskDataResponses = new ArrayList<>();
+        Random random = new Random();
+        for(int i=0;i<10;i++) {
+            PrisonerRiskDataResponse prisonerRiskDataResponse = new PrisonerRiskDataResponse();
+            PrisonerRisk prisonerRisk = prisonerRiskMapper.getByPrisonerId(prisonerId);
+            String riskValue = null;
+            if (prisonerRisk != null)
+                riskValue = prisonerRisk.getRiskValue();
+            prisonerRiskDataResponse.setPrisonerId(prisonerId);
 
-        return prisonerRiskDataResponse;
+            int riskValueOfEnvironment = random.nextInt(100);
+            int riskValueOfVideo = random.nextInt(100);
+            int TotalRiskValue = random.nextInt(100);
+            prisonerRiskDataResponse.setRiskValueOfEnvironment(String.valueOf(riskValueOfEnvironment));
+            prisonerRiskDataResponse.setRiskValueOfVideo(String.valueOf(riskValueOfVideo));
+            prisonerRiskDataResponse.setTotalRiskValue(String.valueOf(TotalRiskValue));
+
+            Date date = new Date(now.getTime()-9000+i*1000);
+            prisonerRiskDataResponse.setCreateAt(mysqlSdf.format(date));
+
+            prisonerRiskDataResponses.add(prisonerRiskDataResponse);
+        }
+
+        return prisonerRiskDataResponses;
     }
 
 
