@@ -13,11 +13,7 @@ public class PrisonerDataResponse {
 
     private String heartBeat;
 
-
     private String riskValue;
-    //private PrisonerHeartBeat heartBeat;
-
-    ///private PrisonerRisk prisonerRisk;
 
 
     public String getPrisonerId() {

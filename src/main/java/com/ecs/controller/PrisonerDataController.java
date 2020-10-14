@@ -69,7 +69,7 @@ public class PrisonerDataController {
     }
 
 
-    @ApiOperation(value = "获取所有犯人心率")
+    /*@ApiOperation(value = "获取所有犯人心率")
     @RequestMapping(path = "/getAllHeartBeat", method = RequestMethod.GET)
     public List<PrisonerHeartBeat> prisonerAllHeartBeat(@RequestHeader(value="token") String token) throws Exception {
         String userId = adminService.getUserIdFromToken(token);
@@ -81,9 +81,9 @@ public class PrisonerDataController {
                 prisonerHeartBeats.add(prisonerHeartBeat);
         }
         return prisonerHeartBeats;
-    }
+    }*/
 
-    @ApiOperation(value = "获取所有犯人风险预警值")
+    /*@ApiOperation(value = "获取所有犯人风险预警值")
     @RequestMapping(path = "/getAll", method = RequestMethod.GET)
     public List<PrisonerRisk> prisonerAllRisk(@RequestHeader(value="token") String token) throws Exception {
         String userId = adminService.getUserIdFromToken(token);
@@ -96,22 +96,22 @@ public class PrisonerDataController {
             prisonerRisks.add(prisonerRisk);
         }
         return prisonerRisks;
-    }
+    }*/
 
-    @ApiOperation(value = "获取单个犯人风险预警值")
+    /*@ApiOperation(value = "获取单个犯人风险预警值")
     @RequestMapping(path = "/get", method = RequestMethod.GET)
     public PrisonerRisk prisonerData(@RequestParam(value = "PrisonerId") String PrisonerId, @RequestHeader(value="token") String token) throws Exception {
         String userId = adminService.getUserIdFromToken(token);
         return riskAssessmentService.prisonerRisk(PrisonerId);
         //return riskAssessmentService.getByPrisonerId(PrisonerId);
-    }
+    }*/
 
-    @ApiOperation(value = "获取单个视频的识别结果")
+    /*@ApiOperation(value = "获取单个视频的识别结果")
     @RequestMapping(path = "/getVideoType", method = RequestMethod.GET)
     public VideoAnomaly videoDetectionData(@RequestParam(value = "CarNo") String CarNo, @RequestHeader(value="token") String token) throws Exception {
         String userId = adminService.getUserIdFromToken(token);
         return riskAssessmentService.getByCarNo(CarNo);
-    }
+    }*/
 
 //    @ApiOperation(value = "获取单个视频的识别结果")
 //    @RequestMapping(path = "/getVideoType", method = RequestMethod.GET)
