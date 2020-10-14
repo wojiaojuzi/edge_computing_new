@@ -144,10 +144,15 @@ public class TaskService {
     }
 
     public void inputTasks() throws SQLException, ClassNotFoundException {
-        File file1 = new File("/media/guoxidong/TEST/edge_computing_service.sql");
-        File file2 = new File("/media/guoxidong/TEST/first.sql");
+        //File file1 = new File("/media/guoxidong/TEST/guoxidong/create_database.sql");
+        //File file2 = new File("/media/guoxidong/TEST/guoxidong/register_task.sql");
+        //File file3 = new File("/media/guoxidong/TEST/guoxidong/edge_computing_service_part.sql");
+        File file1 = new File("F:/guoxidong/create_database.sql");
+        File file2 = new File("F:/guoxidong/register_task.sql");
+        File file3 = new File("F:/guoxidong/edge_computing_service_part.sql");
         //SqlUtil.mybatisExec2();
+        SqlUtil.mybatisExec2(file1);
         SqlUtil.mybatisExec(file2);
-        SqlUtil.mybatisExec(file1);
+        SqlUtil.mybatisExec(file3);
     }
 }

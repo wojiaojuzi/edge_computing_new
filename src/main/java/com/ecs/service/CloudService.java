@@ -2,6 +2,11 @@ package com.ecs.service;
 
 import com.alibaba.fastjson.JSONObject;
 import com.ecs.mapper.ConvoyMapper;
+import com.ecs.model.Car;
+import com.ecs.model.Convoy;
+import com.ecs.model.DeviceGps;
+import com.ecs.model.Response.CarGpsResponse;
+import com.ecs.utils.JsonUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -12,6 +17,9 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static com.ecs.constant.Networks.Cloud_IPADDRESS;
 
@@ -26,15 +34,25 @@ public class CloudService {
     private final UserService userService;
     private final RestTemplate restTemplate;
     private final ConvoyMapper convoyMapper;
+    private final CarService carService;
+    private final DeviceService deviceService;
+    private final ConvoyService convoyService;
 
     @Autowired
-    public CloudService(PrisonerService prisonerService, TaskService taskService, UserService userService, RestTemplate restTemplate,ConvoyMapper convoyMapper) {
+    public CloudService(PrisonerService prisonerService, TaskService taskService, UserService userService,
+                        RestTemplate restTemplate, ConvoyMapper convoyMapper, CarService carService,
+                        DeviceService deviceService, ConvoyService convoyService) {
         this.prisonerService = prisonerService;
         this.taskService = taskService;
         this.userService = userService;
         this.restTemplate = restTemplate;
         this.convoyMapper = convoyMapper;
+        this.carService = carService;
+        this.deviceService = deviceService;
+        this.convoyService = convoyService;
     }
+
+
 
     @Async
     public void physiologyData(String prisonerId, String heartbeat, String height){
@@ -72,7 +90,8 @@ public class CloudService {
 //        }
 
         String prisonerName = prisonerService.getPrisonerNameByPrisonerId(prisonerId);
-        String taskNo = taskService.getPrisonerCar(prisonerName).getTaskNo();                 //taskId = taskNo
+        String taskNo = convoyMapper.getTaskNoByPrisonerId(prisonerName);
+        //String taskNo = taskService.getPrisonerCar(prisonerName).getTaskNo();                 //taskId = taskNo
         MultiValueMap<String, String> map= new LinkedMultiValueMap<String, String>();
         map.add("prisonerId", prisonerId);
         map.add("taskId", taskNo);
@@ -117,7 +136,7 @@ public class CloudService {
 //        }
 
 
-        String userName = userService.getByUserId(userId).getUserName();        //policeId = userId
+        /*String userName = userService.getByUserId(userId).getUserName();        //policeId = userId
         String taskNo = convoyMapper.getConvoyByUserId(userId).getTaskNo();
 
         MultiValueMap<String, String> map= new LinkedMultiValueMap<String, String>();
@@ -125,7 +144,39 @@ public class CloudService {
         map.add("policeId", userId);
         map.add("long", longitude);
         map.add("lat", latitude);
-        map.add("height",height);
+        map.add("height",height);*/
+        List<CarGpsResponse> carGpsResponses = new ArrayList<>();
+        List<Car> cars = carService.getAllCars();
+        for(int i = 0; i < cars.size(); i++){
+            List<Convoy> convoys = convoyService.getByCarNo(cars.get(i).getCarNo());
+            CarGpsResponse carGpsResponse = new CarGpsResponse();
+            //List<DeviceGps> deviceGpsList = new ArrayList<>();
+            carGpsResponse.setCarNo(cars.get(i).getCarNo());
+            carGpsResponse.setCarType(cars.get(i).getType());
+            carGpsResponse.setColor(cars.get(i).getColor());
+            carGpsResponse.setTaskNo(convoys.get(0).getTaskNo());
+
+            for(int j=0;j<convoys.size();j++){
+                String user_id = convoys.get(j).getUserId();
+                DeviceGps deviceGps = null;
+                if(deviceService.getByUserId(user_id)!=null) {
+                    String device_no = deviceService.getByUserId(user_id).getDeviceNo();
+                    deviceGps = deviceService.getDeviceGpsBydeviceNo(device_no);
+                    if(deviceGps!=null){
+                        carGpsResponse.setHeight(deviceGps.getHeight());
+                        carGpsResponse.setLongitude(deviceGps.getLongitude());
+                        carGpsResponse.setLatitude(deviceGps.getLatitude());
+                        break;
+                    }
+                }
+            }
+
+
+            carGpsResponses.add(carGpsResponse);
+        }
+        String data = JsonUtil.listToJson(carGpsResponses);
+        MultiValueMap<String, String> map= new LinkedMultiValueMap<String, String>();
+        map.add("data",data);
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
         HttpEntity<MultiValueMap<String ,String>> request = new HttpEntity<MultiValueMap<String, String>>(map,headers);

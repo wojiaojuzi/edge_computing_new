@@ -151,39 +151,7 @@ public class PrisonerDataController {
         return prisonerDatas;
     }
 
-    @ApiOperation(value = "（云中心）获取全部GPS数据")
-    @RequestMapping(path = "/getGPS", method = RequestMethod.GET)
-    public List<CarGpsResponse> getAllGps(){
-        List<CarGpsResponse> carGpsResponses = new ArrayList<>();
-        List<Car> cars = carService.getAllCars();
-        for(int i = 0; i < cars.size(); i++){
-            List<Convoy> convoys = convoyService.getByCarNo(cars.get(i).getCarNo());
-            CarGpsResponse carGpsResponse = new CarGpsResponse();
-            //carGpsResponse.setDeviceGpsList(new ArrayList<>());
-            //carGpsResponse.setCar(cars.get(i));
-            carGpsResponse.setCarNo(cars.get(i).getCarNo());
-            carGpsResponse.setCarType(cars.get(i).getType());
-            carGpsResponse.setColor(cars.get(i).getColor());
-            carGpsResponse.setTaskNo(convoys.get(0).getTaskNo());
-            for(int j=0;j<convoys.size();j++){
-                String user_id = convoys.get(j).getUserId();
-                DeviceGps deviceGps = null;
-                if(deviceService.getByUserId(user_id)!=null) {
-                    String device_no = deviceService.getByUserId(user_id).getDeviceNo();
-                    deviceGps = deviceService.getDeviceGpsBydeviceNo(device_no);
-                    if(deviceGps!=null){
-                        carGpsResponse.setHeight(deviceGps.getHeight());
-                        carGpsResponse.setLongitude(deviceGps.getLongitude());
-                        carGpsResponse.setLatitude(deviceGps.getLatitude());
-                    }
-                }
-            }
 
-
-            carGpsResponses.add(carGpsResponse);
-        }
-        return carGpsResponses;
-    }
 
 
 

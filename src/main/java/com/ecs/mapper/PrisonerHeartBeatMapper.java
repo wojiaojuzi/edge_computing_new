@@ -12,7 +12,7 @@ import java.sql.Timestamp;
  * Created by Zhaoone on 2019/11/13
  **/
 public interface PrisonerHeartBeatMapper {
-    @Insert("INSERT INTO prisoner_heartbeat(prisoner_id,heart_beat,createAt) " +
+    @Insert("INSERT INTO prisoner_heartbeat(prisoner_id,heart_beat,create_at) " +
             "VALUES(#{prisonerId},#{heartbeat},#{createAt});")
     void createHeartbeat(@Param("prisonerId") String prisonerId,
                          @Param("heartbeat") String heartbeat,
