@@ -106,19 +106,6 @@ public class TaskService {
         return escortDataResponses;
     }
 
-    public Task getTask(String TaskNo){
-        return taskMapper.getByTaskNo(TaskNo);
-    }
-
-    public Task getPrisonerCar(String prisonerName){
-        return taskMapper.getByPrisonerName(prisonerName);
-    }
-
-    public Task getTaskByUserName(String userName){
-        return taskMapper.getByUserName(userName);
-    }
-
-
 
     public List<Route> getAllRoute(){
         return routeMapper.getAllRoute();
