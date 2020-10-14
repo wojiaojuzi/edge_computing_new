@@ -58,18 +58,6 @@ public class UserService {
             //更新数据库token_create_at，之后每次鉴权需要查看数据库查看自己的token是否是最新的
             userMapper.updateTokenCreateTimeByUserId(mysqlSdf.format(createTime), user.getUserId());
 
-//            /*更新prisonerId mapper
-//             * 2019/10/14
-//             */
-//            userMapper.updatePrisonerIdById(loginRequest.getPrisonerId(), user.getId());
-//            userMapper.updatePrisonerNameById(prisoner.getPrisonerName(), user.getId());
-
-            /*
-             *  更新deviceMapper，在登陆时写入用户和犯人姓名字段
-             */
-//            deviceMapper.updateUserName(loginRequest.getUserName(),deviceNo);
-//            String prisonerName = prisonerMapper.getPrisonerNameByPrisonerId(loginRequest.getPrisonerId()).getPrisonerName();
-//            deviceMapper.updatePrisonerName(prisonerName,deviceNo);
 
             //将token返回作为登录凭证
             user.setLoginToken(token);
@@ -83,16 +71,6 @@ public class UserService {
         String userId = getUserIdFromToken(token);
         userMapper.updateTokenCreateTimeByUserId(null, userId);
 
-//        /*更新prisonerId mapper
-//         * 2019/10/14
-//         */
-//        userMapper.updatePrisonerIdById(null, userId);
-//        userMapper.updatePrisonerNameById(null, userId);
-        /*
-         *  更新deviceMapper，在登出时
-         */
-//        deviceMapper.updateUserName(null,deviceNo);
-//        deviceMapper.updatePrisonerName(null,deviceNo);
     }
 
     public void createUser(User user) {
@@ -118,11 +96,4 @@ public class UserService {
         else return userId;
     }
 
-    public List<User> getAll(){
-        return userMapper.getAll();
-    }
-
-    public User getByUserId(String userId){
-        return userMapper.getByUserId(userId);
-    }
 }
