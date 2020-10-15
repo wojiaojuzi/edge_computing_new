@@ -15,6 +15,26 @@ public class AbnormalResponse {
 
     private boolean dealState;
 
+    private boolean misdeclaration;
+
+    private String comment;
+
+    public String getComment() {
+        return comment;
+    }
+
+    public void setComment(String comment) {
+        this.comment = comment;
+    }
+
+    public boolean isMisdeclaration() {
+        return misdeclaration;
+    }
+
+    public void setMisdeclaration(boolean misdeclaration) {
+        this.misdeclaration = misdeclaration;
+    }
+
     public String getCreateAt() {
         return createAt;
     }

@@ -157,7 +157,8 @@ public class PrisonerDataController {
 
     @ApiOperation(value = "犯人超出距离上报")
     @RequestMapping(path = "/outrange", method = RequestMethod.POST)
-    public String outRange(@RequestParam("prisonerId") String prisonerId){
+    public String outRange(@RequestParam("prisonerId") String prisonerId,@RequestHeader(value="token") String token) throws Exception {
+        String userId = adminService.getUserIdFromToken(token);
         prisonerDataService.uploadOutRange(prisonerId);
         return "上传成功";
     }

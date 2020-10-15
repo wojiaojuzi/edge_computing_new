@@ -1,6 +1,7 @@
 package com.ecs.controller;
 
 import com.ecs.model.*;
+import com.ecs.model.Exception.EdgeComputingServiceException;
 import com.ecs.model.Request.DeviceRegisterRequest;
 import com.ecs.model.Response.DeviceCloudGraphResponse;
 import com.ecs.model.Response.DeviceResponse;
@@ -212,7 +213,8 @@ public class DeviceController {
     public void getByDeviceNo(@RequestParam("deviceStatus") Boolean deviceStatus,
                               @RequestParam("DeviceNo") String DeviceNo,
                               @RequestParam("record") String record,
-                              @RequestParam("token") String token){
+                              @RequestHeader("token") String token) throws Exception {
+        String userId = adminService.getUserIdFromToken(token);
         deviceService.updateDeviceConnectivityStatusByDeviceNo(deviceStatus, record, DeviceNo);
     }
 
@@ -241,6 +243,11 @@ public class DeviceController {
         //prisonerService.updateUserNameByBraceletNo(deviceNo,braceletNo);
         //braceletService.updateDeviceNoAndUidByBraceletNo(braceletNo, deviceNo);
         //braceletService.updateBraceletStatus(true,braceletNo);
+        if(braceletService.getDeviceNoByBraceletNo(braceletNo) == null)
+            if(!braceletService.bindNewBracelet(braceletNo, deviceNo)) {
+                throw new EdgeComputingServiceException(ResponseEnum.DEVICE_NOT_EXIST.getCode(), ResponseEnum.DEVICE_NOT_EXIST.getMessage());
+            }
+            else
         braceletService.updateDeviceNoByBraceletNo(braceletNo,deviceNo);
 
         return "修改成功";
@@ -270,14 +277,13 @@ public class DeviceController {
         return "修改成功";
     }
 
-    @ApiOperation(value = "手持机位置上传")
+    @ApiOperation(value = "一体机位置上传")
     @RequestMapping(path = "/upload2", method = RequestMethod.POST)
     public String uploadByPad(@RequestParam(value = "deviceNo") String deviceNo,
                               @RequestParam(value = "longitude") String longitude, @RequestParam(value = "latitude") String latitude,
-                              @RequestParam("height") String height, @RequestParam("token") String token) throws IOException {
-        //String carNo = taskService.getTaskByUserName((userService.getByUserId(userId).getUserName())).getCarNo();
+                              @RequestParam("height") String height, @RequestHeader("token") String token) throws Exception {
+        String userId = adminService.getUserIdFromToken(token);
         deviceService.uploadDeviceGps(deviceNo, longitude, latitude, height);
-        String userId = deviceService.getByDeviceNo(deviceNo).getUserId();
         cloudService.GpsData(userId,deviceNo,longitude, latitude, height);
         return "上传成功";
     }
@@ -288,7 +294,8 @@ public class DeviceController {
                                    @RequestParam("cpuUsageRate") String cpuUsageRate,
                                    @RequestParam("memoryUsageRate") String memoryUsageRate,
                                    @RequestParam("dumpEnergyRate") String dumpEnergyRate,
-                                   @RequestParam("token") String token) {
+                                   @RequestHeader("token") String token) throws Exception {
+        String userId = adminService.getUserIdFromToken(token);
         SimpleDateFormat mysqlSdf = new SimpleDateFormat(mysqlSdfPatternString);
         Date time = new Date();
         String createAt = mysqlSdf.format(time);
@@ -308,9 +315,12 @@ public class DeviceController {
         return deviceService.getDeviceStateBydeviceNo(deviceNo);
     }
 
+ */
+
     @ApiOperation(value = "获取全部设备信息")
     @RequestMapping(path = "/getAllRunInfo", method = RequestMethod.GET)
-    public List<DeviceState> getAllDeviceState(@RequestHeader(value="token") String token){
+    public List<DeviceState> getAllDeviceState(@RequestHeader(value="token") String token) throws Exception {
+        String userId = adminService.getUserIdFromToken(token);
         List<Device> devices = deviceService.getAll();
         List<DeviceState> deviceStateList = new ArrayList<>();
         for(int i = 0; i < devices.size(); i++){
@@ -318,7 +328,7 @@ public class DeviceController {
         }
         return deviceStateList;
     }
- */
+
 
     /*@ApiOperation(value = "判断手环是否绑定犯人")
     @RequestMapping(path = "/braceletBind", method = RequestMethod.GET)

@@ -82,15 +82,15 @@ public class AdminService {
         String adminId = JSONObject.parseObject(jwt.getSubject()).getString("uid");
         String tokenCreateTime = adminMapper.getTokenCreatedTime(adminId);
         if(tokenCreateTime == null) {
-            System.out.println("这是user");
+            //System.out.println("这是user");
             tokenCreateTime = userMapper.getTokenCreateTime(adminId);
         }
 
         //数据库中token创建时间字段为空，说明用户已经注销登陆
         if (tokenCreateTime == null)
             throw new EdgeComputingServiceException(ResponseEnum.DO_NOT_LOGIN.getCode(), ResponseEnum.DO_NOT_LOGIN.getMessage());
-        else if (jwt.getIssuedAt().getTime() != mysqlSdf.parse(tokenCreateTime).getTime())
-            throw new EdgeComputingServiceException(ResponseEnum.ALREADY_LOGIN.getCode(), ResponseEnum.ALREADY_LOGIN.getMessage());
+        //else if (jwt.getIssuedAt().getTime() != mysqlSdf.parse(tokenCreateTime).getTime())
+            //throw new EdgeComputingServiceException(ResponseEnum.ALREADY_LOGIN.getCode(), ResponseEnum.ALREADY_LOGIN.getMessage());
         else if (jwt.getExpiresAt().getTime() < now.getTime())
             throw new EdgeComputingServiceException(ResponseEnum.EXPIRED_USER_TOKEN.getCode(), ResponseEnum.EXPIRED_USER_TOKEN.getMessage());
         else return adminId;

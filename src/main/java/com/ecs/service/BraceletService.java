@@ -27,6 +27,22 @@ public class BraceletService {
         this.vervelMapper = vervelMapper;
     }
 
+    public boolean bindNewBracelet(String braceletNo, String device_no) {
+        Device device = deviceService.getByDeviceNo(device_no);
+        if(device == null) {
+            return false;
+        }
+        SimpleDateFormat mysqlSdf = new SimpleDateFormat(mysqlSdfPatternString);
+        Date createTime = new Date();
+        String createAt = mysqlSdf.format(createTime);
+        Bracelet bracelet = new Bracelet();
+        bracelet.setBraceletNo(braceletNo);
+        bracelet.setCreateAt(createAt);
+        bracelet.setDeviceNo(device_no);
+        braceletMapper.createBracelet(bracelet);
+        return true;
+    }
+
     /*public void updateBraceletStatus(Boolean deviceStatus, String braceletNo){
         braceletMapper.updateDeviceStatusByBraceletNo(deviceStatus, braceletNo);
         Device device = deviceService.getByDeviceNo(getDeviceNoByBraceletNo(braceletNo));
@@ -54,14 +70,4 @@ public class BraceletService {
         return braceletMapper.getBraceletNoByDeviceNo(deviceNo);
     }
 
-    /*public String getPrisonerIdByBraceletNo(String braceletNo){
-        return braceletMapper.getPrisonerIdByBraceletNo(braceletNo);
-    }*/
-
-    /*public void updatePrisonerIdByBraceletNo(String braceletNo, String prisonerId){
-        Bracelet bracelet= new Bracelet();
-        bracelet.setBraceletNo(braceletNo);
-        bracelet.setPrisonerId(prisonerId);
-        braceletMapper.createBracelet(bracelet);
-    }*/
 }

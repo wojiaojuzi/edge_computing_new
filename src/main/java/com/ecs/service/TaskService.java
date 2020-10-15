@@ -130,6 +130,10 @@ public class TaskService {
         return true;
     }
 
+    public Task getTask(String taskNo){
+        return taskMapper.getByTaskNo(taskNo);
+    }
+
     public void inputTasks() throws SQLException, ClassNotFoundException {
         //File file1 = new File("/media/guoxidong/TEST/guoxidong/create_database.sql");
         //File file2 = new File("/media/guoxidong/TEST/guoxidong/register_task.sql");

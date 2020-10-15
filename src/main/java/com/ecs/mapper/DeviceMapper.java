@@ -17,19 +17,10 @@ public interface DeviceMapper {
     @Select("SELECT * FROM device WHERE user_id=#{userId}")
     Device getByUserId(@Param("userId") String userId);
 
-    @Select("SELECT * FROM device;")
-    @Results({
-            @Result(id = true, column = "id", property = "id"),
-            @Result(column = "device_no", property = "deviceNo"),
-            @Result(column = "device_status", property = "deviceStatus"),
-            @Result(column = "device_type", property = "deviceType"),
-            @Result(column = "uid", property = "uid"),
-            @Result(column = "create_at", property = "createAt"),
-            @Result(column = "uid", property = "user", one = @One(select = "com.ecs.mapper.UserMapper.getById"))
-    })
+    @Select("SELECT * FROM device")
     List<Device> getAll();
 
-    @Insert("INSERT INTO device(device_no,device_status,uid,device_type) VALUES(#{deviceNo},#{deviceStatus},#{uid},#{deviceType});")
+    @Insert("INSERT INTO device(device_no,user_id,device_type) VALUES(#{deviceNo},#{userId},#{deviceType});")
     Integer createDevice(Device device);
 
     @Delete("DELETE FROM device WHERE device_no=#{deviceNo};")

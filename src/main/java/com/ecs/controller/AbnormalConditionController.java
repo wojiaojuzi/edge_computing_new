@@ -88,17 +88,19 @@ public class AbnormalConditionController {
         String userId = adminService.getUserIdFromToken(token);
 
         List<AbnormalResponse> abnormalResponses = new ArrayList<>();
-        List<PrisonerRisk> prisonerRisks = abnormalConditionService.getPrisonerRiskByPrisonerId(prisonerId);
-        for(int i = 0;i < prisonerRisks.size(); i++){
-
-            String id = prisonerRisks.get(i).getId();
-            String createAt = prisonerRisks.get(i).getCreateAt();
-            String riskValue = prisonerRisks.get(i).getRiskValue();
-            List<PrisonerAnomaly> prisonerAnomalies = abnormalConditionService.getPrisonerAnomalyByRiskId(id);
-
+        List<PrisonerAnomaly> prisonerAnomalies = abnormalConditionService.getPrisonerAnomalyByPrisonerId(prisonerId);
+        String prisonerName = prisonerService.getPrisonerNameByPrisonerId(prisonerId);
+        for(int i = 0;i < prisonerAnomalies.size(); i++){
             AbnormalResponse abnormalResponse = new AbnormalResponse();
+            abnormalResponse.setCreateAt(prisonerAnomalies.get(i).getCreateAt());
+            abnormalResponse.setDealState(prisonerAnomalies.get(i).isDealState());
+            abnormalResponse.setExceptionLevel(prisonerAnomalies.get(i).getLevel());
+            abnormalResponse.setExceptionType(prisonerAnomalies.get(i).getDescription());
+            abnormalResponse.setComment(prisonerAnomalies.get(i).getComment());
+            abnormalResponse.setMisdeclaration(prisonerAnomalies.get(i).isMisdeclaration());
+            abnormalResponse.setPrisonerName(prisonerName);
 
-
+            abnormalResponses.add(abnormalResponse);
         }
 
         return search(abnormalResponses);

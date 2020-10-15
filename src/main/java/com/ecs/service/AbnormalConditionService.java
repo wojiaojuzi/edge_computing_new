@@ -10,7 +10,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by Zhaoone on 2019/10/31
@@ -98,5 +100,19 @@ public class AbnormalConditionService {
 
     public Task getCar(String prisonerName){
         return taskMapper.getByPrisonerName(prisonerName);
+    }
+
+    public List<PrisonerAnomaly> getPrisonerAnomalyByPrisonerId(String prisonerId){
+        List<PrisonerAnomaly>prisonerAnomalyList = prisonerAnomalyMapper.getByPrisonerId(prisonerId);
+        List<PrisonerAnomaly>prisonerAnomalyLatest = new ArrayList<>();
+        Set<String> risk_ids = new HashSet<>();
+        for(int i = 0; i < prisonerAnomalyList.size(); i++){
+            PrisonerAnomaly prisonerAnomaly = prisonerAnomalyList.get(i);
+            if(!risk_ids.contains(prisonerAnomaly.getRiskId())) {
+                prisonerAnomalyLatest.add(prisonerAnomaly);
+                risk_ids.add(prisonerAnomaly.getRiskId());
+            }
+        }
+        return prisonerAnomalyLatest;
     }
 }
