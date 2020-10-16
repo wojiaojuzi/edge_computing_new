@@ -35,6 +35,9 @@ public interface DeviceMapper {
     @Select("SELECT device_no FROM device WHERE user_id = #{userId}")
     String getDeviceNoByUserId(@Param("userId")String userId);
 
+    @Update("UPDATE device SET user_id=#{user_id} WHERE device_no=#{deviceNo};")
+    Integer updateDeviceUserByDeviceNo(@Param("user_id") String user_id, @Param("deviceNo") String deviceNo);
+
     @Update("UPDATE device SET device_connectivity_status=#{deviceConnectivityStatus} WHERE device_no =#{deviceNo};")
     void updateDeviceConnectivityStatusByDeviceNo(@Param("deviceConnectivityStatus") Boolean deviceConnectivityStatus,
                                   @Param("deviceNo") String deviceNo);

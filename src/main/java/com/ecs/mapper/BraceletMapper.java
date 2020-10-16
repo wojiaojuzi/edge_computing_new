@@ -43,6 +43,9 @@ public interface BraceletMapper {
     @Update("UPDATE bracelet SET device_no=#{deviceNo},create_at=#{createAt} WHERE bracelet_no=#{braceletNo}")
     void updateDeviceNoByBraceletNo(@Param("deviceNo") String deviceNo,@Param("braceletNo") String braceletNo,@Param("createAt")String createAt);
 
+    @Select("SELECT device_no FROM bracelet WHERE bracelet_no=#{braceletNo}")
+    String getDeviceNoByBraceletNo(@Param("braceletNo")String braceletNo);
+
 
 
     /*@Update("UPDATE bracelet SET device_no=#{deviceNo},uid=#{uid},device_status=#{deviceStatus} WHERE bracelet_no =#{braceletNo};")//@Param("deviceNo")
@@ -61,5 +64,5 @@ public interface BraceletMapper {
 
     @Insert("INSERT INTO bracelet(bracelet_no,device_no,create_at) " +
             "VALUES(#{braceletNo},#{deviceNo},#{createAt});")
-    void createBracelet(Bracelet bracelet);
+    void createBracelet(@Param("braceletNo") String braceletNo, @Param("deviceNo") String deviceNo, @Param("createAt")String createAt);
 }

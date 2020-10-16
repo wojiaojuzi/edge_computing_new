@@ -77,8 +77,8 @@ public class AbnormalConditionController {
 
     @ApiOperation(value = "详情")
     @RequestMapping(path = "/comment", method = RequestMethod.POST)
-    public String updateComment(@RequestBody UpdateCommentRequest updateCommentRequest,@RequestHeader(value="token") String token){
-        abnormalConditionService.updateComment(updateCommentRequest.getId(), updateCommentRequest.getComment());
+    public String updateComment(@RequestParam("riskId")String riskId,@RequestParam("comment")String comment, @RequestHeader(value="token") String token){
+        abnormalConditionService.updateComment(riskId, comment);
         return "处理完毕";
     }
 

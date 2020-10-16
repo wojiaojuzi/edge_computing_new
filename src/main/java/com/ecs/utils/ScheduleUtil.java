@@ -3,7 +3,9 @@ package com.ecs.utils;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 //import com.ecs.mapper.EscapeGpsMapper;
+import com.ecs.model.Device;
 import com.ecs.service.CloudService;
+import com.ecs.service.DeviceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -17,18 +19,30 @@ import java.util.List;
 /**
  * Created by Zhaoone on 2019/12/20
  **/
-/*@Configuration
+@Configuration
 @EnableScheduling
 public class ScheduleUtil {
 
     private final CloudService cloudService;
+    private final DeviceService deviceService;
     //private final EscapeGpsMapper escapeGpsMapper;
     //private final RiskLevelRecordingMapper riskLevelRecordingMapper;
 
     @Autowired
-    public ScheduleUtil(CloudService cloudService) {
+    public ScheduleUtil(CloudService cloudService, DeviceService deviceService) {
         this.cloudService = cloudService;
+        this.deviceService = deviceService;
     }
+
+    @Scheduled(fixedDelay = 2000)
+    private void rectifyDeviceStatus() throws Exception {
+        List<Device> devices = deviceService.getAll();
+        for(Device device:devices){
+            String deviceNo = device.getDeviceNo();
+            deviceService.rectifyDeviceStatus(deviceNo);
+        }
+    }
+}
 
     /*
      * 定时调取云端关于犯人逃逸的数据，并解析，如果逃逸，写入数据库

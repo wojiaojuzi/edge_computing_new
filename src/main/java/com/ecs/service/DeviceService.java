@@ -112,11 +112,9 @@ public class DeviceService {
             String deviceType = deviceRegisterRequest.getDeviceType();
             String deviceNo = deviceRegisterRequest.getDeviceNo();
             if(deviceType.equals("一体化终端") || deviceType.equals("手持机")) {
-                // 一个user只可能有一个phone和一个ipad
-                if(deviceMapper.getByUserIdAndType(userId, deviceType) != null) {
-                    return null;
-                } else if(deviceMapper.getByDeviceNo(deviceNo) != null) {
-                    return null;
+                if(deviceMapper.getByDeviceNo(deviceNo) != null) {
+                    deviceMapper.updateDeviceUserByDeviceNo(userId, deviceNo);
+                    return deviceMapper.getByDeviceNo(deviceNo);
                 } else {
                     Device device = new Device();
 //                SimpleDateFormat df = new SimpleDateFormat("yyyyMMddHHmmss");//设置日期格式
@@ -133,6 +131,7 @@ public class DeviceService {
             }
         }
     }
+
 
 
     public void deviceLogin(String deviceNo) {
@@ -167,7 +166,7 @@ public class DeviceService {
 
     //deviceState
     public DeviceState getDeviceStateBydeviceNo(String deviceNo){
-        return deviceStateMapper.getByDeivceNo(deviceNo);
+        return deviceStateMapper.getByDeviceNo(deviceNo);
     }
     public void createDeviceState(DeviceState deviceState){
         String createAt = deviceState.getCreateAt();
@@ -209,14 +208,14 @@ public class DeviceService {
 
     public Boolean rectifyDeviceStatus(String deviceNo) throws Exception {
         SimpleDateFormat mysqlSdf = new SimpleDateFormat(mysqlSdfPatternString);
-        Boolean device_status = deviceConnectionMapper.getByDeviceNo(deviceNo).isDeviceConnectivityStatus();
+        DeviceState deviceState = deviceStateMapper.getByDeviceNo(deviceNo);
         //DeviceRunInfo deviceRunInfo = deviceRunInfoMapper.getLastestOneByDeviceNo(deviceNo);
         //if(deviceRunInfo == null)   return false;
         Device device = getByDeviceNo(deviceNo);
-        DeviceConnection deviceConnection = deviceConnectionMapper.getByDeviceNo(deviceNo);
+        //DeviceConnection deviceConnection = deviceConnectionMapper.getByDeviceNo(deviceNo);
         Timestamp now = new Timestamp(new Date().getTime());
-        if(device_status == true){
-            if(now.getTime() - mysqlSdf.parse(deviceConnection.getCreateAt()).getTime() > 5500){
+        if(deviceState != null){
+            if(now.getTime() - mysqlSdf.parse(deviceState.getCreateAt()).getTime() > 5500){
                 updateDeviceConnectivityStatusByDeviceNo(false,"设备离线",deviceNo );
 
                 return false;
@@ -228,7 +227,7 @@ public class DeviceService {
              *如果有10s内，重新连接，打出日志，返回数据
              * 没有，返回断连
              * */
-            if(now.getTime() - mysqlSdf.parse(deviceConnection.getCreateAt()).getTime() > 10500) {
+            if(now.getTime() - mysqlSdf.parse(deviceState.getCreateAt()).getTime() > 10500) {
                 return false;
             }else{
                 updateDeviceConnectivityStatusByDeviceNo(true,"设备重连",deviceNo);

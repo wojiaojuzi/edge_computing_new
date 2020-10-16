@@ -1,9 +1,13 @@
 package com.ecs.service;
 
 import com.ecs.mapper.BraceletMapper;
+import com.ecs.mapper.DeviceConnectionMapper;
+import com.ecs.mapper.DeviceMapper;
 import com.ecs.mapper.VervelMapper;
 import com.ecs.model.Bracelet;
 import com.ecs.model.Device;
+import com.ecs.model.Exception.EdgeComputingServiceException;
+import com.ecs.model.Response.ResponseEnum;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,30 +20,33 @@ import java.util.Date;
 @Service
 public class BraceletService {
     private static final String mysqlSdfPatternString = "yyyy-MM-dd HH:mm:ss";
+    private final DeviceMapper deviceMapper;
     private final BraceletMapper braceletMapper;
-    private final DeviceService deviceService;
+    private final DeviceConnectionMapper deviceConnectionMapper;
     private final VervelMapper vervelMapper;
 
     @Autowired
-    public BraceletService(BraceletMapper braceletMapper, DeviceService deviceService, VervelMapper vervelMapper) {
+    public BraceletService(DeviceMapper deviceMapper, BraceletMapper braceletMapper, DeviceConnectionMapper deviceConnectionMapper, VervelMapper vervelMapper) {
+        this.deviceMapper = deviceMapper;
         this.braceletMapper = braceletMapper;
-        this.deviceService = deviceService;
+        this.deviceConnectionMapper = deviceConnectionMapper;
         this.vervelMapper = vervelMapper;
     }
 
     public boolean bindNewBracelet(String braceletNo, String device_no) {
-        Device device = deviceService.getByDeviceNo(device_no);
+        Device device = deviceMapper.getByDeviceNo(device_no);
         if(device == null) {
             return false;
         }
         SimpleDateFormat mysqlSdf = new SimpleDateFormat(mysqlSdfPatternString);
         Date createTime = new Date();
         String createAt = mysqlSdf.format(createTime);
-        Bracelet bracelet = new Bracelet();
-        bracelet.setBraceletNo(braceletNo);
-        bracelet.setCreateAt(createAt);
-        bracelet.setDeviceNo(device_no);
-        braceletMapper.createBracelet(bracelet);
+        //Bracelet bracelet = new Bracelet();
+        //bracelet.setBraceletNo(braceletNo);
+        //bracelet.setCreateAt(createAt);
+        //bracelet.setDeviceNo(device_no);
+        braceletMapper.createBracelet(braceletNo,device_no,createAt);
+        updateDeviceConnectivityStatusByDeviceNo(true, "绑定手环",device_no);
         return true;
     }
 
@@ -50,6 +57,47 @@ public class BraceletService {
             deviceLogsService.insertRecord(device, "bracelet", "设备重连");
         else    deviceLogsService.insertRecord(device, "bracelet", "设备掉线");
     }*/
+
+    public boolean updateBraceletConnectivityStatus(String deviceNo, String braceletNo){
+        SimpleDateFormat mysqlSdf = new SimpleDateFormat(mysqlSdfPatternString);
+        Date time = new Date();
+        String createAt = mysqlSdf.format(time);
+        //找到原来的设备
+
+        if(braceletMapper.getByBraceletNo(braceletNo) == null)
+            braceletMapper.createBracelet(braceletNo,deviceNo,createAt);
+        String lastDeviceNo = braceletMapper.getDeviceNoByBraceletNo(braceletNo);
+        if(deviceMapper.getByDeviceNo(deviceNo)!=null) {
+            if (lastDeviceNo != null) {
+                if (braceletMapper.getDeviceNoByBraceletNo(braceletNo) != lastDeviceNo) {
+                    updateDeviceConnectivityStatusByDeviceNo(false, "手环解绑", lastDeviceNo);
+                    updateDeviceConnectivityStatusByDeviceNo(true, "绑定手环", deviceNo);
+                }
+                //与新设备建立连接
+                braceletMapper.updateDeviceNoByBraceletNo(braceletNo, deviceNo, createAt);
+
+                return true;
+            }
+        }
+        /*else{// 就创建新的
+            if(braceletMapper.getByBraceletNo(braceletNo) == null) {
+                if (!bindNewBracelet(braceletNo, deviceNo)) {
+                    throw new EdgeComputingServiceException(ResponseEnum.DEVICE_NOT_EXIST.getCode(), ResponseEnum.DEVICE_NOT_EXIST.getMessage());
+                }
+                return true;
+            }
+            else {
+                braceletMapper.updateDeviceNoByBraceletNo(braceletNo, deviceNo, createAt);
+                updateDeviceConnectivityStatusByDeviceNo(true, "绑定手环",deviceNo);
+                return true;
+            }
+        }*/
+
+        return false;
+
+    }
+
+
 
     public String getDeviceNoByBraceletNo(String braceletNo){
         return braceletMapper.getByBraceletNo(braceletNo).getDeviceNo();
@@ -68,6 +116,13 @@ public class BraceletService {
 
     public String getBraceletNoByDeviceNo(String deviceNo){
         return braceletMapper.getBraceletNoByDeviceNo(deviceNo);
+    }
+
+    public void updateDeviceConnectivityStatusByDeviceNo(Boolean deviceConnectivityStatus, String record, String deviceNo){
+        SimpleDateFormat mysqlSdf = new SimpleDateFormat(mysqlSdfPatternString);
+        Date createTime = new Date();
+        String createAt = mysqlSdf.format(createTime);
+        deviceConnectionMapper.updateDeviceConnectivityStatusByDeviceNo(deviceConnectivityStatus, createAt, record,deviceNo);
     }
 
 }

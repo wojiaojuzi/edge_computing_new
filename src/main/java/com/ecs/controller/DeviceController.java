@@ -57,7 +57,7 @@ public class DeviceController {
         this.convoyService = convoyService;
     }
 
-    @ApiOperation(value = "获取设备信息")
+    /*@ApiOperation(value = "获取设备信息")
     @RequestMapping(path = "/get", method = RequestMethod.GET)
     public HttpResponseContent getByDeviceNo(@RequestHeader(value="token") String token, @RequestParam("deviceNo") String deviceNo) throws Exception{
         String userId = adminService.getUserIdFromToken(token);
@@ -133,7 +133,9 @@ public class DeviceController {
         return deviceResponses;
     }
 
-    @ApiOperation(value = "注册新设备")    //未修改关于手环、脚环的部分
+     */
+
+    /*@ApiOperation(value = "注册新设备")    //未修改关于手环、脚环的部分
     @RequestMapping(path = "/register", method = RequestMethod.POST)
     public HttpResponseContent createDevice(@RequestParam("deviceType") String deviceType,
                                             @RequestParam("deviceNo") String deviceNo,
@@ -151,7 +153,7 @@ public class DeviceController {
             response.setData(device);
         }
         return response;
-    }
+    }*/
 
     @ApiOperation(value = "设备登入")
     @RequestMapping(path = "/login", method = RequestMethod.PUT)
@@ -201,7 +203,7 @@ public class DeviceController {
     */
     @ApiOperation(value = "判断设备是否存在")
     @RequestMapping(path = "/judgeDeviceNo", method = RequestMethod.GET)
-    public boolean judgeDeviceNo(@RequestParam("deviceNo") String deviceNo,@RequestParam("token") String token) {
+    public boolean judgeDeviceNo(@RequestParam("deviceNo") String deviceNo) {
         Device device = deviceService.getByDeviceNo(deviceNo);
         if(device == null)
             return false;
@@ -218,64 +220,27 @@ public class DeviceController {
         deviceService.updateDeviceConnectivityStatusByDeviceNo(deviceStatus, record, DeviceNo);
     }
 
-    /*
-    *   1、读取手环绑定手持机的no
-    *   2、如果不空，解绑；如果空，建立新连接
-    *   3、与一体机无关
-    * */
+
+
     @ApiOperation(value = "修改手环连接设备")
     @RequestMapping(path = "/updateBraceletConnectivityStatus", method = RequestMethod.POST)
     public String updateBraceletConnectivityStatus(@RequestHeader(value="token")String token, @RequestParam("deviceNo") String deviceNo,
                                                  @RequestParam("braceletNo") String braceletNo) throws Exception {
         String userId = adminService.getUserIdFromToken(token);
-        SimpleDateFormat mysqlSdf = new SimpleDateFormat(mysqlSdfPatternString);
-        Date time = new Date();
-        String createAt = mysqlSdf.format(time);
-        //找到原来的设备
-        String lastDeviceNo = braceletService.getDeviceNoByBraceletNo(braceletNo);
-        if(lastDeviceNo != null) {
-            Device lastDevice = deviceService.getByDeviceNo(lastDeviceNo);
-            //与旧设备解绑
-            deviceService.updateDeviceConnectivityStatusByDeviceNo(false, "手环解绑",lastDeviceNo);
-        }
-        //与新设备建立连接
-        deviceService.updateDeviceConnectivityStatusByDeviceNo(true, "绑定手环",deviceNo);
-        //prisonerService.updateUserNameByBraceletNo(deviceNo,braceletNo);
-        //braceletService.updateDeviceNoAndUidByBraceletNo(braceletNo, deviceNo);
-        //braceletService.updateBraceletStatus(true,braceletNo);
-        if(braceletService.getDeviceNoByBraceletNo(braceletNo) == null)
-            if(!braceletService.bindNewBracelet(braceletNo, deviceNo)) {
-                throw new EdgeComputingServiceException(ResponseEnum.DEVICE_NOT_EXIST.getCode(), ResponseEnum.DEVICE_NOT_EXIST.getMessage());
-            }
-            else
-        braceletService.updateDeviceNoByBraceletNo(braceletNo,deviceNo);
-
-        return "修改成功";
+        if(braceletService.updateBraceletConnectivityStatus(deviceNo,braceletNo))
+            return "修改成功";
+        return "修改失败";
     }
     @ApiOperation(value = "修改脚环连接设备")
     @RequestMapping(path = "/updateVervelConnectivityStatus", method = RequestMethod.POST)
     public String updateVervelConnectivityStatus(@RequestHeader(value="token")String token, @RequestParam("deviceNo") String deviceNo,
                                                  @RequestParam("vervelNo") String vervelNo) throws Exception {
         String userId = adminService.getUserIdFromToken(token);
-        SimpleDateFormat mysqlSdf = new SimpleDateFormat(mysqlSdfPatternString);
-        Date time = new Date();
-        String createAt = mysqlSdf.format(time);
-        //找到原来的设备
-        String lastDeviceNo = vervelService.getByVervelNo(vervelNo).getDeviceNo();
-        if(lastDeviceNo != null) {
-            Device lastDevice = deviceService.getByDeviceNo(lastDeviceNo);
-            //与旧设备解绑
-            deviceService.updateDeviceConnectivityStatusByDeviceNo(false, "脚环解绑",lastDeviceNo);
-        }
-        //与新设备建立连接
-        deviceService.updateDeviceConnectivityStatusByDeviceNo(true, "绑定脚环",deviceNo);
-        //prisonerService.updateUserNameByBraceletNo(deviceNo,braceletNo);
-        //braceletService.updateDeviceNoAndUidByBraceletNo(braceletNo, deviceNo);
-        //braceletService.updateBraceletStatus(true,braceletNo);
-        vervelService.updateDeviceNoByVervelNo(vervelNo,deviceNo,createAt);
-
-        return "修改成功";
+        if(vervelService.updateVervelConnectivityStatus(deviceNo,vervelNo))
+            return "修改成功";
+        return "修改失败";
     }
+
 
     @ApiOperation(value = "一体机位置上传")
     @RequestMapping(path = "/upload2", method = RequestMethod.POST)
@@ -309,13 +274,7 @@ public class DeviceController {
         return "上传成功";
     }
 
-/*    @ApiOperation(value = "获取最新的设备信息")
-    @RequestMapping(path = "/latestRunInfo", method = RequestMethod.GET)
-    public DeviceState getDeviceStateByDeviceNo(@RequestParam("deviceNo") String deviceNo, @RequestHeader(value="token") String token){
-        return deviceService.getDeviceStateBydeviceNo(deviceNo);
-    }
 
- */
 
     @ApiOperation(value = "获取全部设备信息")
     @RequestMapping(path = "/getAllRunInfo", method = RequestMethod.GET)

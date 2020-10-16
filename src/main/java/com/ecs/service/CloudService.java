@@ -30,8 +30,6 @@ import static com.ecs.constant.Networks.Cloud_IPADDRESS;
 public class CloudService {
 
     private final PrisonerService prisonerService;
-    private final TaskService taskService;
-    private final UserService userService;
     private final RestTemplate restTemplate;
     private final ConvoyMapper convoyMapper;
     private final CarService carService;
@@ -39,12 +37,10 @@ public class CloudService {
     private final ConvoyService convoyService;
 
     @Autowired
-    public CloudService(PrisonerService prisonerService, TaskService taskService, UserService userService,
-                        RestTemplate restTemplate, ConvoyMapper convoyMapper, CarService carService,
+    public CloudService(PrisonerService prisonerService, RestTemplate restTemplate,
+                        ConvoyMapper convoyMapper, CarService carService,
                         DeviceService deviceService, ConvoyService convoyService) {
         this.prisonerService = prisonerService;
-        this.taskService = taskService;
-        this.userService = userService;
         this.restTemplate = restTemplate;
         this.convoyMapper = convoyMapper;
         this.carService = carService;

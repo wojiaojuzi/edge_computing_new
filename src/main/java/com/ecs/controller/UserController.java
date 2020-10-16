@@ -1,10 +1,13 @@
 package com.ecs.controller;
 
+import com.ecs.model.Device;
+import com.ecs.model.Request.DeviceRegisterRequest;
 import com.ecs.model.Request.UserRegisterRequest;
 import com.ecs.model.Response.HttpResponseContent;
 import com.ecs.model.Request.LoginRequest;
 import com.ecs.model.Response.ResponseEnum;
 import com.ecs.model.User;
+import com.ecs.service.DeviceService;
 import com.ecs.service.UserService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -25,10 +28,12 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
 
     private final UserService userService;
+    private final DeviceService deviceService;
 
     @Autowired
-    public UserController(UserService userService) {
+    public UserController(UserService userService, DeviceService deviceService) {
         this.userService = userService;
+        this.deviceService = deviceService;
     }
 
 //    @ApiOperation(value = "获取用户信息")
@@ -50,7 +55,9 @@ public class UserController {
     @ApiOperation(value = "用户登陆")
     @RequestMapping(path = "/login", method = RequestMethod.POST)
     public HttpResponseContent userLogin(@RequestParam("userId") String userId,
-                                         @RequestParam("password") String password) throws Exception {
+                                         @RequestParam("password") String password,
+                                         @RequestParam("deviceNo") String deviceNo,
+                                         @RequestParam("deviceType") String deviceType) throws Exception {
         HttpResponseContent response = new HttpResponseContent();
         LoginRequest loginRequest = new LoginRequest(userId, password);
         User user = userService.userLogin(loginRequest);
@@ -58,9 +65,18 @@ public class UserController {
             response.setCode(ResponseEnum.LOGIN_FAILED.getCode());
             response.setMessage(ResponseEnum.LOGIN_FAILED.getMessage());
         } else {
-            response.setCode(ResponseEnum.SUCCESS.getCode());
-            response.setMessage(ResponseEnum.SUCCESS.getMessage());
-            response.setData(user);
+            //将设备表里的该设备修改为该用户
+            DeviceRegisterRequest deviceRegisterRequest = new DeviceRegisterRequest(deviceType,
+                    userId, deviceNo);
+            Device device = deviceService.createDevice(deviceRegisterRequest);
+            if(device == null) {
+                response.setCode(ResponseEnum.REQUEST_ERROR.getCode());
+                response.setMessage(ResponseEnum.REQUEST_ERROR.getMessage());
+            } else {
+                response.setCode(ResponseEnum.SUCCESS.getCode());
+                response.setMessage(ResponseEnum.SUCCESS.getMessage());
+                response.setData(user);
+            }
         }
         return response;
     }

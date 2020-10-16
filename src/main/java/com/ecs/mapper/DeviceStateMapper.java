@@ -13,7 +13,7 @@ public interface DeviceStateMapper {
     void deleteByDeviceNo(@Param("deviceNo")String deviceNo);
 
     @Select("select * from device_state where create_at=(select max(create_at) from (select * from device_state where device_no=#{deviceNo}) as a) and device_no=#{deviceNo}")
-    DeviceState getByDeivceNo(@Param("deviceNo")String deviceNo);
+    DeviceState getByDeviceNo(@Param("deviceNo")String deviceNo);
 
     @Insert("INSERT INTO device_state(create_at,dump_energy_rate,cpu_usage_rate,memory_usage_rate,device_no) " +
             "VALUES(#{createAt},#{dumpEnergyRate},#{cpuUsageRate},#{memoryUsageRate},#{deviceNo})")
