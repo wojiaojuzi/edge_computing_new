@@ -94,14 +94,14 @@ public class TaskController {
     }
     */
 
-    @ApiOperation(value = "获取警察的任务信息（手持机）")
+    /*@ApiOperation(value = "获取警察的任务信息（手持机）")
     @RequestMapping(path = "/deviceGetTasks", method = RequestMethod.GET)
     public Task getByUserId(@RequestParam("userName") String userName, @RequestHeader(value="token") String token) {
         String userId = userService.getByUserName(userName).getUserId();
         String taskNo = convoyService.getConvoyByUserId(userId).getTaskNo();
         Task task = taskService.getTask(taskNo);
         return task;
-    }
+    }*/
 
 
     @ApiOperation(value = "获取警察绑定犯人信息（一体机）")
