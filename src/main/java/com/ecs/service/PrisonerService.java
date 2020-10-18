@@ -6,6 +6,7 @@ import com.ecs.model.PrisonerHeartBeat;
 import com.ecs.model.PrisonerRisk;
 import com.ecs.model.Response.PrisonerDataResponse;
 import com.ecs.model.Response.PrisonerRiskDataResponse;
+import com.ecs.model.Response.PrisonerToPadResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -26,17 +27,15 @@ public class PrisonerService {
     private static final String mysqlSdfPatternString = "yyyy-MM-dd HH:mm:ss";
     private final PrisonerMapper prisonerMapper;
     private final DeviceMapper deviceMapper;
-    private final UserMapper userMapper;
     private final BraceletMapper braceletMapper;
     private final PrisonerHeartBeatMapper prisonerHeartBeatMapper;
     private final PrisonerRiskMapper prisonerRiskMapper;
 
     @Autowired
-    public PrisonerService(PrisonerMapper prisonerMapper, DeviceMapper deviceMapper, UserMapper userMapper,
-                           BraceletMapper braceletMapper, PrisonerHeartBeatMapper prisonerHeartBeatMapper, PrisonerRiskMapper prisonerRiskMapper) {
+    public PrisonerService(PrisonerMapper prisonerMapper, DeviceMapper deviceMapper, BraceletMapper braceletMapper,
+                           PrisonerHeartBeatMapper prisonerHeartBeatMapper, PrisonerRiskMapper prisonerRiskMapper) {
         this.prisonerMapper = prisonerMapper;
         this.deviceMapper = deviceMapper;
-        this.userMapper = userMapper;
         this.braceletMapper = braceletMapper;
         this.prisonerHeartBeatMapper = prisonerHeartBeatMapper;
         this.prisonerRiskMapper = prisonerRiskMapper;
@@ -126,6 +125,17 @@ public class PrisonerService {
 
     public List<Prisoner> getAllPrisoners(){
         return prisonerMapper.getAll();
+    }
+
+    public PrisonerToPadResponse getPrisonerAllInformation(String prisonerId){
+        PrisonerToPadResponse prisonerToPadResponse = new PrisonerToPadResponse();
+        prisonerToPadResponse.setPrisonerId(prisonerId);
+        prisonerToPadResponse.setHeartBeat(prisonerHeartBeatMapper.getLastestHeartbeatByPrisonerId(prisonerId).getHeartBeat());
+        prisonerToPadResponse.setRiskValueOfEnvironment("50");
+        prisonerToPadResponse.setTotalRiskValue(prisonerRiskMapper.getByPrisonerId(prisonerId).getRiskValue());
+        prisonerToPadResponse.setRiskValueOfVideo("30");
+
+        return prisonerToPadResponse;
     }
 
 

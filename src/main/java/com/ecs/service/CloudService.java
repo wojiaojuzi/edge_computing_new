@@ -1,7 +1,7 @@
 package com.ecs.service;
 
 import com.alibaba.fastjson.JSONObject;
-import com.ecs.mapper.ConvoyMapper;
+import com.ecs.mapper.*;
 import com.ecs.model.Car;
 import com.ecs.model.Convoy;
 import com.ecs.model.DeviceGps;
@@ -29,23 +29,23 @@ import static com.ecs.constant.Networks.Cloud_IPADDRESS;
 @Service
 public class CloudService {
 
-    private final PrisonerService prisonerService;
+    private final PrisonerMapper prisonerMapper;
     private final RestTemplate restTemplate;
     private final ConvoyMapper convoyMapper;
-    private final CarService carService;
-    private final DeviceService deviceService;
-    private final ConvoyService convoyService;
+    private final CarMapper carMapper;
+    private final DeviceMapper deviceMapper;
+    private final DeviceGpsMapper deviceGpsMapper;
 
     @Autowired
-    public CloudService(PrisonerService prisonerService, RestTemplate restTemplate,
-                        ConvoyMapper convoyMapper, CarService carService,
-                        DeviceService deviceService, ConvoyService convoyService) {
-        this.prisonerService = prisonerService;
+    public CloudService(PrisonerMapper prisonerMapper, RestTemplate restTemplate,
+                        ConvoyMapper convoyMapper, CarMapper carMapper,
+                        DeviceMapper deviceMapper, DeviceGpsMapper deviceGpsMapper) {
+        this.prisonerMapper = prisonerMapper;
         this.restTemplate = restTemplate;
         this.convoyMapper = convoyMapper;
-        this.carService = carService;
-        this.deviceService = deviceService;
-        this.convoyService = convoyService;
+        this.carMapper = carMapper;
+        this.deviceMapper = deviceMapper;
+        this.deviceGpsMapper = deviceGpsMapper;
     }
 
 
@@ -85,7 +85,7 @@ public class CloudService {
 //            "msg":"failed"
 //        }
 
-        String prisonerName = prisonerService.getPrisonerNameByPrisonerId(prisonerId);
+        String prisonerName = prisonerMapper.getPrisonerNameByPrisonerId(prisonerId);
         String taskNo = convoyMapper.getTaskNoByPrisonerId(prisonerName);
         //String taskNo = taskService.getPrisonerCar(prisonerName).getTaskNo();                 //taskId = taskNo
         MultiValueMap<String, String> map= new LinkedMultiValueMap<String, String>();
@@ -142,9 +142,9 @@ public class CloudService {
         map.add("lat", latitude);
         map.add("height",height);*/
         List<CarGpsResponse> carGpsResponses = new ArrayList<>();
-        List<Car> cars = carService.getAllCars();
+        List<Car> cars = carMapper.getAll();
         for(int i = 0; i < cars.size(); i++){
-            List<Convoy> convoys = convoyService.getByCarNo(cars.get(i).getCarNo());
+            List<Convoy> convoys = convoyMapper.getByCarNo(cars.get(i).getCarNo());
             CarGpsResponse carGpsResponse = new CarGpsResponse();
             //List<DeviceGps> deviceGpsList = new ArrayList<>();
             carGpsResponse.setCarNo(cars.get(i).getCarNo());
@@ -155,9 +155,9 @@ public class CloudService {
             for(int j=0;j<convoys.size();j++){
                 String user_id = convoys.get(j).getUserId();
                 DeviceGps deviceGps = null;
-                if(deviceService.getByUserId(user_id)!=null) {
-                    String device_no = deviceService.getByUserId(user_id).getDeviceNo();
-                    deviceGps = deviceService.getDeviceGpsBydeviceNo(device_no);
+                if(deviceMapper.getByUserId(user_id)!=null) {
+                    String device_no = deviceMapper.getByUserId(user_id).getDeviceNo();
+                    deviceGps = deviceGpsMapper.getByDeviceNo(device_no);
                     if(deviceGps!=null){
                         carGpsResponse.setHeight(deviceGps.getHeight());
                         carGpsResponse.setLongitude(deviceGps.getLongitude());
