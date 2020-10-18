@@ -9,6 +9,8 @@ import com.ecs.model.Response.AbnormalResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -19,7 +21,7 @@ import java.util.Set;
  **/
 @Service
 public class AbnormalConditionService {
-
+    private static final String mysqlSdfPatternString = "yyyy-MM-dd HH:mm:ss";
     private final PrisonerMapper prisonerMapper;
     private final TaskMapper taskMapper;
     private final PrisonerRiskMapper prisonerRiskMapper;
@@ -34,15 +36,19 @@ public class AbnormalConditionService {
         this.prisonerAnomalyMapper = prisonerAnomalyMapper;
     }
 
-    public List<AbnormalResponse> getAllExceptions(){
+    public List<AbnormalResponse> getAllExceptions() throws ParseException {
+        SimpleDateFormat mysqlSdf = new SimpleDateFormat(mysqlSdfPatternString);
         List<PrisonerRisk> list = getAllHighRiskLevel("0");
+        System.out.println(list.toString());
         List<AbnormalResponse> abnormalResponses = new ArrayList<>();
         for (int i = 0; i < list.size(); i++) {
             String id = list.get(i).getId();
             String prisonerId = list.get(i).getPrisonerId();
             String prisonerName = prisonerMapper.getPrisonerNameByPrisonerId(prisonerId);
 
-            String createAt = list.get(i).getCreateAt();
+
+            String createAt = mysqlSdf.format(mysqlSdf.parse(list.get(i).getCreateAt()));;
+            System.out.println(createAt);
             String riskValue = list.get(i).getRiskValue();
             //List<PrisonerAnomaly> prisonerAnomalies = abnormalConditionService.getPrisonerAnomalyByRiskId(id);
             PrisonerAnomaly prisonerAnomaly = getLatestByRiskId(id);

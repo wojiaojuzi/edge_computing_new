@@ -46,4 +46,14 @@ public class PrisonerRisk {
     public void setRiskValue(String riskValue) {
         this.riskValue = riskValue;
     }
+
+    @Override
+    public String toString() {
+        return "PrisonerRisk{" +
+                "id='" + id + '\'' +
+                ", prisonerId='" + prisonerId + '\'' +
+                ", createAt='" + createAt + '\'' +
+                ", riskValue='" + riskValue + '\'' +
+                '}';
+    }
 }
