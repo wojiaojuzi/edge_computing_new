@@ -34,7 +34,7 @@ public class ScheduleUtil {
         this.deviceService = deviceService;
     }
 
-    @Scheduled(fixedDelay = 2000)
+    //@Scheduled(fixedDelay = 2000)
     private void rectifyDeviceStatus() throws Exception {
         List<Device> devices = deviceService.getAll();
         for(Device device:devices){

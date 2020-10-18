@@ -68,7 +68,9 @@ public class DeviceService {
                     String deviceType = deviceMapper.getByDeviceNo(deviceNo).getDeviceType();
                     String braceletNo = braceletMapper.getBraceletNoByDeviceNo(deviceNo);
                     String vervelNo = vervelMapper.getVervelNoByDeviceNo(deviceNo);
-                    boolean deviceConnectivityStatus = deviceConnectionMapper.getByDeviceNo(deviceNo).isDeviceConnectivityStatus();
+                    Boolean deviceConnectivityStatus = deviceConnectionMapper.getDeviceConnectivityStatusByDeviceNo(deviceNo);
+                    Boolean braceletConnectivityStatus = deviceConnectionMapper.getDeviceConnectivityStatusByDeviceNo(braceletNo);
+                    Boolean vervelConnectivityStatus = deviceConnectionMapper.getDeviceConnectivityStatusByDeviceNo(vervelNo);
                     deviceAndRing.setUserName(userName);
                     deviceAndRing.setDeviceName(deviceType+deviceNo);
                     deviceAndRing.setTaskNo(taskNo);
@@ -77,7 +79,9 @@ public class DeviceService {
                     deviceAndRing.setDeviceType(deviceType);
                     deviceAndRing.setDeviceConnectivityStatus(deviceConnectivityStatus);
                     deviceAndRing.setBraceletNo(braceletNo);
+                    deviceAndRing.setBraceletConnectivityStatus(braceletConnectivityStatus);
                     deviceAndRing.setVervelNo(vervelNo);
+                    deviceAndRing.setVervelConnectivityStatus(vervelConnectivityStatus);
 
                     deviceAndRingList.add(deviceAndRing);
                 }
@@ -179,7 +183,7 @@ public class DeviceService {
 
     //deviceGps
     public DeviceGps getDeviceGpsBydeviceNo(String deviceNo){
-        return deviceGpsMapper.getByDeivceNo(deviceNo);
+        return deviceGpsMapper.getByDeviceNo(deviceNo);
     }
     public void deleteDeviceGpsDeviceGps(String deviceNo) {
         deviceGpsMapper.deleteByDeviceNo(deviceNo);
@@ -209,34 +213,33 @@ public class DeviceService {
     public Boolean rectifyDeviceStatus(String deviceNo) throws Exception {
         SimpleDateFormat mysqlSdf = new SimpleDateFormat(mysqlSdfPatternString);
         DeviceState deviceState = deviceStateMapper.getByDeviceNo(deviceNo);
-        //DeviceRunInfo deviceRunInfo = deviceRunInfoMapper.getLastestOneByDeviceNo(deviceNo);
-        //if(deviceRunInfo == null)   return false;
         Device device = getByDeviceNo(deviceNo);
-        //DeviceConnection deviceConnection = deviceConnectionMapper.getByDeviceNo(deviceNo);
         Timestamp now = new Timestamp(new Date().getTime());
+
         if(deviceState != null){
             if(now.getTime() - mysqlSdf.parse(deviceState.getCreateAt()).getTime() > 5500){
                 updateDeviceConnectivityStatusByDeviceNo(false,"设备离线",deviceNo );
 
                 return false;
             }else{
+                DeviceConnection deviceConnection = deviceConnectionMapper.getByDeviceNo(deviceNo);
+                if(deviceConnection!=null){
+                    if(!deviceConnection.isDeviceConnectivityStatus()){
+                        updateDeviceConnectivityStatusByDeviceNo(true,"设备重连",deviceNo);
+                        return true;
+                    }
+                }
                 return true;
             }
-        }else{
-            /*
-             *如果有10s内，重新连接，打出日志，返回数据
-             * 没有，返回断连
-             * */
+        }
+        return true;/*else{
             if(now.getTime() - mysqlSdf.parse(deviceState.getCreateAt()).getTime() > 10500) {
                 return false;
             }else{
                 updateDeviceConnectivityStatusByDeviceNo(true,"设备重连",deviceNo);
-                //deviceLogsService.insertRecord(device, "phone","设备重连");
-                //deviceLogsService.insertRecord(device, "bracelet","设备重连");
-                //deviceLogsService.insertRecord(device, "vervel","设备重连");
                 return true;
             }
-        }
+        }*/
     }
 
     public void updateDeviceConnectivityStatusByDeviceNo(Boolean deviceConnectivityStatus, String record, String deviceNo){

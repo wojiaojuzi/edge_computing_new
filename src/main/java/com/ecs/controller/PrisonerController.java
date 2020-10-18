@@ -3,10 +3,7 @@ package com.ecs.controller;
 import com.ecs.model.Prisoner;
 import com.ecs.model.PrisonerHeartBeat;
 import com.ecs.model.PrisonerRisk;
-import com.ecs.model.Response.HttpResponseContent;
-import com.ecs.model.Response.PrisonerDataResponse;
-import com.ecs.model.Response.PrisonerRiskDataResponse;
-import com.ecs.model.Response.ResponseEnum;
+import com.ecs.model.Response.*;
 import com.ecs.model.Task;
 import com.ecs.service.*;
 import io.swagger.annotations.Api;
@@ -44,12 +41,12 @@ public class PrisonerController {
 
 
 
-/*    @ApiOperation(value = "获取单个犯人信息")
+    @ApiOperation(value = "获取单个犯人信息")
     @RequestMapping(path = "/get", method = RequestMethod.GET)
-    public Prisoner getById(@RequestParam("prisonerId") String prisonerId,@RequestHeader(value="token") String token) throws Exception{
+    public PrisonerToPadResponse getById(@RequestParam("prisonerId") String prisonerId, @RequestHeader(value="token") String token) throws Exception{
         String userId = adminService.getUserIdFromToken(token);
-        return prisonerService.getById(prisonerId);
-    }*/
+        return prisonerService.getPrisonerAllInformation(prisonerId);
+    }
 
     @ApiOperation(value = "获取所有犯人信息")
     @RequestMapping(path = "/getAllPrisonerData", method = RequestMethod.GET)
