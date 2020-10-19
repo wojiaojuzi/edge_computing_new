@@ -2,6 +2,7 @@ package com.ecs.mapper;
 
 import com.ecs.model.Car;
 import com.ecs.model.Convoy;
+import com.ecs.model.Response.CarAndTaskResponse;
 import org.apache.ibatis.annotations.*;
 
 import java.util.List;
@@ -36,4 +37,7 @@ public interface ConvoyMapper {
 
     @Select("SELECT task_no FROM convoy WHERE prisoner_id = #{prisonerId}")
     String getTaskNoByPrisonerId(@Param("prisonerId")String prisonerId);
+
+    @Select("SELECT distinct car_no,task_no FROM convoy group by car_no")
+    List<CarAndTaskResponse> getCarAndTask();
 }

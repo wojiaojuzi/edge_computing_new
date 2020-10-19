@@ -1,6 +1,7 @@
 package com.ecs.controller;
 
 import com.ecs.model.Device;
+import com.ecs.model.Exception.EdgeComputingServiceException;
 import com.ecs.model.Request.DeviceRegisterRequest;
 import com.ecs.model.Request.UserRegisterRequest;
 import com.ecs.model.Response.HttpResponseContent;

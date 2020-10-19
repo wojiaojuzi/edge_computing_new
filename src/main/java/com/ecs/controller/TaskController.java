@@ -103,6 +103,14 @@ public class TaskController {
         return task;
     }*/
 
+    @ApiOperation(value = "获取车辆信息")
+    @RequestMapping(path = "/getAllCars", method = RequestMethod.GET)
+    public List<Car> getAllCars(@RequestHeader(value="token") String token) throws Exception{
+        String userId = adminService.getUserIdFromToken(token);
+        List<Car> cars = carService.getAllCars();
+        return cars;
+    }
+
 
     @ApiOperation(value = "获取警察绑定犯人信息（一体机）")
     @RequestMapping(path = "/getByUser", method = RequestMethod.GET)
@@ -171,8 +179,8 @@ public class TaskController {
             for(int j=0;j<convoys.size();j++){
                 String user_id = convoys.get(j).getUserId();
                 DeviceGps deviceGps = null;
-                if(deviceService.getByUserId(user_id)!=null) {
-                    String device_no = deviceService.getByUserId(user_id).getDeviceNo();
+                if(deviceService.getByUserIdAndDeviceType(user_id,"一体化终端")!=null) {
+                    String device_no = deviceService.getByUserIdAndDeviceType(user_id,"一体化终端").getDeviceNo();
                     deviceGps = deviceService.getDeviceGpsBydeviceNo(device_no);
                     if(deviceGps!=null){
                         carGpsResponse.setHeight(deviceGps.getHeight());
@@ -206,8 +214,8 @@ public class TaskController {
             for(int j=0;j<convoys.size();j++){
                 String user_id = convoys.get(j).getUserId();
                 DeviceGps deviceGps = null;
-                if(deviceService.getByUserId(user_id)!=null) {
-                    String device_no = deviceService.getByUserId(user_id).getDeviceNo();
+                if(deviceService.getByUserIdAndDeviceType(user_id,"一体化终端")!=null) {
+                    String device_no = deviceService.getByUserIdAndDeviceType(user_id,"一体化终端").getDeviceNo();
                     deviceGps = deviceService.getDeviceGpsBydeviceNo(device_no);
                     if(deviceGps!=null){
                         carGpsResponse.setHeight(deviceGps.getHeight());

@@ -17,6 +17,9 @@ public interface DeviceMapper {
     @Select("SELECT * FROM device WHERE user_id=#{userId}")
     Device getByUserId(@Param("userId") String userId);
 
+    @Select("SELECT * FROM device WHERE user_id=#{userId} and device_type=#{deviceType}")
+    Device getByUserIdAndDeviceType(@Param("userId")String userId,@Param("deviceType")String deviceType);
+
     @Select("SELECT * FROM device")
     List<Device> getAll();
 

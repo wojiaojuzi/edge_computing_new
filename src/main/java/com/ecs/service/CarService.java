@@ -3,6 +3,7 @@ package com.ecs.service;
 
 import com.ecs.mapper.CarMapper;
 import com.ecs.model.Car;
+import com.ecs.model.Response.CarAndTaskResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -32,4 +33,6 @@ public class CarService {
     public List<String> getCarNo(){
         return carMapper.getCarNo();
     }
+
+    //public List<CarAndTaskResponse> getCarAndTask
 }

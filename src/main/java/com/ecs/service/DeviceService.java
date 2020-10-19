@@ -2,8 +2,10 @@ package com.ecs.service;
 
 import com.ecs.mapper.*;
 import com.ecs.model.*;
+import com.ecs.model.Exception.EdgeComputingServiceException;
 import com.ecs.model.Request.DeviceRegisterRequest;
 import com.ecs.model.Response.DeviceCloudGraphResponse;
+import com.ecs.model.Response.ResponseEnum;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -104,6 +106,10 @@ public class DeviceService {
         return deviceMapper.getByUserId(userId);
     }
 
+    public Device getByUserIdAndDeviceType(String userId,String deviceType){
+        return deviceMapper.getByUserIdAndDeviceType(userId,deviceType);
+    }
+
     public List<Device> getAll() {
         return deviceMapper.getAll();
     }
@@ -115,24 +121,30 @@ public class DeviceService {
             String userId = deviceRegisterRequest.getUserId();
             String deviceType = deviceRegisterRequest.getDeviceType();
             String deviceNo = deviceRegisterRequest.getDeviceNo();
-            if(deviceType.equals("一体化终端") || deviceType.equals("手持机")) {
-                if(deviceMapper.getByDeviceNo(deviceNo) != null) {
-                    deviceMapper.updateDeviceUserByDeviceNo(userId, deviceNo);
-                    return deviceMapper.getByDeviceNo(deviceNo);
-                } else {
-                    Device device = new Device();
+            Device de = deviceMapper.getByDeviceNo(deviceNo);
+            if(de == null||de.getUserId().equals(userId)) {
+                if (deviceType.equals("一体化终端") || deviceType.equals("手持机")) {
+                    if (deviceMapper.getByDeviceNo(deviceNo) != null) {
+                        deviceMapper.updateDeviceUserByDeviceNo(userId, deviceNo);
+                        return deviceMapper.getByDeviceNo(deviceNo);
+                    } else {
+                        Device device = new Device();
 //                SimpleDateFormat df = new SimpleDateFormat("yyyyMMddHHmmss");//设置日期格式
 //                String date = df.format(new Date());
 //                String deviceNo = deviceRegisterRequest.getDeviceType() + date;
-                    device.setDeviceNo(deviceNo);
-                    device.setDeviceType(deviceType);
-                    device.setUserId(userId);
-                    deviceMapper.createDevice(device);
-                    return deviceMapper.getByDeviceNo(deviceNo);
+                        device.setDeviceNo(deviceNo);
+                        device.setDeviceType(deviceType);
+                        device.setUserId(userId);
+                        deviceMapper.createDevice(device);
+                        return deviceMapper.getByDeviceNo(deviceNo);
+                    }
+                } else {
+                    return null;
                 }
-            } else {
-                return null;
             }
+            else
+                throw new EdgeComputingServiceException(ResponseEnum.DEVICE_HAS_CREATED.getCode(), ResponseEnum.DEVICE_HAS_CREATED.getMessage());
+            //return null;
         }
     }
 
