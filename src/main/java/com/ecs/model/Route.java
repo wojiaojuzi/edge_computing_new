@@ -57,4 +57,15 @@ public class Route {
     public void setLatitude(String latitude) {
         this.latitude = latitude;
     }
+
+    @Override
+    public String toString() {
+        return "Route{" +
+                "id='" + id + '\'' +
+                ", routeId='" + routeId + '\'' +
+                ", pointId='" + pointId + '\'' +
+                ", longitude='" + longitude + '\'' +
+                ", latitude='" + latitude + '\'' +
+                '}';
+    }
 }
