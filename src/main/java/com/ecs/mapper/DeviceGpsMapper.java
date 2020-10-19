@@ -10,6 +10,9 @@ public interface DeviceGpsMapper {
     @Delete("DELETE FROM device_gps WHERE device_no=#{deviceNo}")
     void deleteByDeviceNo(@Param("deviceNo")String deviceNo);
 
+    @Delete("DELETE FROM device_gps")
+    void deleteAll();
+
     @Select("select * from device_gps where create_at=(select max(create_at) from (select * from device_gps where device_no=#{deviceNo}) as a) and device_no=#{deviceNo}")
     DeviceGps getByDeviceNo(@Param("deviceNo")String deviceNo);
 

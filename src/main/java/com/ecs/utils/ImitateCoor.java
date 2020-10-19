@@ -33,7 +33,9 @@ public class ImitateCoor {
         Route route = routeMapper.getByPointId(count);
         deviceGpsMapper.createDeviceGps("34123",route.getLongitude(),route.getLatitude(),"44",createAt);
         count++;
-        if(count>1000)
-            count=1;
+        if(count>1000) {
+            deviceGpsMapper.deleteAll();;
+            count = 1;
+        }
     }
 }
