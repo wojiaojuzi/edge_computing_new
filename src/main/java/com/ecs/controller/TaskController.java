@@ -161,14 +161,19 @@ public class TaskController {
 
     @ApiOperation(value = "获取路线信息")
     @RequestMapping(path = "/getCarRoute", method = RequestMethod.GET)
-    public List<Route> getAllRoute(@RequestHeader(value="token") String token) throws Exception{
-        return taskService.getAllRoute();
+    public HttpResponseContent getAllRoute(@RequestHeader(value="token") String token) throws Exception{
+        HttpResponseContent response = new HttpResponseContent();
+        response.setCode(ResponseEnum.SUCCESS.getCode());
+        response.setMessage(ResponseEnum.SUCCESS.getMessage());
+        response.setData(taskService.getAllRoute());
+        return response;
     }
 
     @ApiOperation(value = "（前端轨迹展示）获取全部GPS数据")
     @RequestMapping(path = "/getCarGps", method = RequestMethod.GET)
-    public List<CarGpsResponse> getAllGps2(@RequestHeader(value="token") String token) throws Exception{
+    public HttpResponseContent getAllGps2(@RequestHeader(value="token") String token) throws Exception{
         String userId = adminService.getUserIdFromToken(token);
+        HttpResponseContent response = new HttpResponseContent();
         List<CarGpsResponse> carGpsResponses = new ArrayList<>();
         List<Car> cars = carService.getAllCars();
         for(int i = 0; i < cars.size(); i++){
@@ -198,7 +203,10 @@ public class TaskController {
 
             carGpsResponses.add(carGpsResponse);
         }
-        return carGpsResponses;
+        response.setCode(ResponseEnum.SUCCESS.getCode());
+        response.setMessage(ResponseEnum.SUCCESS.getMessage());
+        response.setData(carGpsResponses);
+        return response;
     }
 
     @ApiOperation(value = "（云中心）获取全部GPS数据")
