@@ -105,10 +105,14 @@ public class TaskController {
 
     @ApiOperation(value = "获取车辆信息")
     @RequestMapping(path = "/getAllCars", method = RequestMethod.GET)
-    public List<Car> getAllCars(@RequestHeader(value="token") String token) throws Exception{
+    public HttpResponseContent getAllCars(@RequestHeader(value="token") String token) throws Exception{
         String userId = adminService.getUserIdFromToken(token);
+        HttpResponseContent response = new HttpResponseContent();
         List<Car> cars = carService.getAllCars();
-        return cars;
+        response.setCode(ResponseEnum.SUCCESS.getCode());
+        response.setMessage(ResponseEnum.SUCCESS.getMessage());
+        response.setData(cars);
+        return response;
     }
 
 
