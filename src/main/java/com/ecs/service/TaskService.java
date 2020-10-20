@@ -2,6 +2,7 @@ package com.ecs.service;
 
 import com.ecs.mapper.*;
 import com.ecs.model.*;
+import com.ecs.model.Response.CoordinateResponse;
 import com.ecs.model.Response.EscortDataResponse;
 import com.ecs.model.Response.VideoUrlResponse;
 import com.ecs.utils.SqlUtil;
@@ -108,8 +109,18 @@ public class TaskService {
     }
 
 
-    public List<Route> getAllRoute(){
-        return routeMapper.getAllRoute();
+    public List<CoordinateResponse> getAllRoute(){
+        List<CoordinateResponse> coordinateResponses = routeMapper.getCoordinateResponse();
+        /*List<Route> routes = routeMapper.getAllRoute();
+        for(int i=0;i<routes.size();i++){
+            Route route = routes.get(i);
+            CoordinateResponse coordinateResponse = new CoordinateResponse();
+            coordinateResponse.setLongitutde(route.getLongitude());
+            coordinateResponse.setLatitude(route.getLatitude());
+        }
+
+         */
+        return coordinateResponses;
     }
 
     public boolean getDataBaseStatus(){

@@ -15,7 +15,8 @@ import java.util.Date;
 @EnableScheduling
 public class ImitateCoor {
     private static final String mysqlSdfPatternString = "yyyy-MM-dd HH:mm:ss";
-    private static int count=1;
+    private static int count=1,instruct_count=3;
+    public static String lon="0",lat="0",height="0";
     private final RouteMapper routeMapper;
     private final DeviceGpsMapper deviceGpsMapper;
 
@@ -32,10 +33,16 @@ public class ImitateCoor {
         String createAt = mysqlSdf.format(createTime);
         Route route = routeMapper.getByPointId(count);
         deviceGpsMapper.createDeviceGps("34123",route.getLongitude(),route.getLatitude(),"44",createAt);
+        Route instruct_route = routeMapper.getByPointId(instruct_count);
+        lon=instruct_route.getLongitude();
+        lat=instruct_route.getLatitude();
+        height="44";
         count++;
-        if(count>1000) {
+        instruct_count++;
+        if(instruct_count>1000) {
             deviceGpsMapper.deleteAll();;
             count = 1;
+            instruct_count=3;
         }
     }
 }
