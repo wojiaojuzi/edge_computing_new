@@ -216,4 +216,15 @@ public class TaskController {
         return carGpsResponses;
     }
 
+    @ApiOperation(value = "获取起点坐标")
+    @RequestMapping(path = "/getStartPoint", method = RequestMethod.GET)
+    public HttpResponseContent getStartPoint(@RequestHeader(value="token") String token) throws Exception {
+        String userId = adminService.getUserIdFromToken(token);
+        HttpResponseContent response = new HttpResponseContent();
+        String[] res = taskService.getStartPoint();
+        response.setCode(ResponseEnum.SUCCESS.getCode());
+        response.setMessage(ResponseEnum.SUCCESS.getMessage());
+        response.setData(res);
+        return response;
+    }
 }
