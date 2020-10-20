@@ -221,7 +221,7 @@ public class TaskController {
     public HttpResponseContent getStartPoint(@RequestHeader(value="token") String token) throws Exception {
         String userId = adminService.getUserIdFromToken(token);
         HttpResponseContent response = new HttpResponseContent();
-        String[] res = taskService.getStartPoint();
+        double[] res = taskService.getStartPoint();
         response.setCode(ResponseEnum.SUCCESS.getCode());
         response.setMessage(ResponseEnum.SUCCESS.getMessage());
         response.setData(res);

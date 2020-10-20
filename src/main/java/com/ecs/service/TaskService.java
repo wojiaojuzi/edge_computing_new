@@ -109,7 +109,7 @@ public class TaskService {
     }
 
 
-    public String[][] getAllRoute(){
+    public double[][] getAllRoute(){
         List<CoordinateResponse> coordinateResponses = routeMapper.getCoordinateResponse();
         /*List<Route> routes = routeMapper.getAllRoute();
         for(int i=0;i<routes.size();i++){
@@ -120,17 +120,17 @@ public class TaskService {
         }
 
          */
-        String[][] res = new String[coordinateResponses.size()][2];
+        double[][] res = new double[coordinateResponses.size()][2];
         for(int i=0;i<coordinateResponses.size();i++){
-            res[i][0] = coordinateResponses.get(i).getLongitude();
-            res[i][1] = coordinateResponses.get(i).getLatitude();
+            res[i][0] = Double.parseDouble(coordinateResponses.get(i).getLongitude());
+            res[i][1] = Double.parseDouble(coordinateResponses.get(i).getLatitude());
         }
         return res;
     }
 
-    public String[] getStartPoint(){
+    public double[] getStartPoint(){
         Route route = routeMapper.getByPointId(1);
-        return new String[]{route.getLongitude(),route.getLatitude()};
+        return new double[]{Double.parseDouble(route.getLongitude()),Double.parseDouble(route.getLatitude())};
     }
 
     public boolean getDataBaseStatus(){
