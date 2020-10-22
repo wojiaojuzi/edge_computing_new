@@ -1,5 +1,6 @@
 package com.ecs.service;
 
+import com.alibaba.fastjson.JSONObject;
 import com.ecs.mapper.*;
 import com.ecs.model.Prisoner;
 import com.ecs.model.PrisonerHeartBeat;
@@ -7,6 +8,8 @@ import com.ecs.model.PrisonerRisk;
 import com.ecs.model.Response.PrisonerDataResponse;
 import com.ecs.model.Response.PrisonerRiskDataResponse;
 import com.ecs.model.Response.PrisonerToPadResponse;
+import com.ecs.model.wan.PrisonerInfo;
+import com.ecs.utils.JsonUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -30,15 +33,17 @@ public class PrisonerService {
     private final BraceletMapper braceletMapper;
     private final PrisonerHeartBeatMapper prisonerHeartBeatMapper;
     private final PrisonerRiskMapper prisonerRiskMapper;
+    private final WanMapper wanMapper;
 
     @Autowired
     public PrisonerService(PrisonerMapper prisonerMapper, DeviceMapper deviceMapper, BraceletMapper braceletMapper,
-                           PrisonerHeartBeatMapper prisonerHeartBeatMapper, PrisonerRiskMapper prisonerRiskMapper) {
+                           PrisonerHeartBeatMapper prisonerHeartBeatMapper, PrisonerRiskMapper prisonerRiskMapper,WanMapper wanMapper) {
         this.prisonerMapper = prisonerMapper;
         this.deviceMapper = deviceMapper;
         this.braceletMapper = braceletMapper;
         this.prisonerHeartBeatMapper = prisonerHeartBeatMapper;
         this.prisonerRiskMapper = prisonerRiskMapper;
+        this.wanMapper = wanMapper;
     }
 
     public List<PrisonerDataResponse> getAllPrisonerData(){
@@ -138,5 +143,24 @@ public class PrisonerService {
         return prisonerToPadResponse;
     }
 
+    public List<PrisonerInfo> getWan1(){
+        List<String> prisonerInfos = wanMapper.getPrisonerInfo();
+        List<PrisonerInfo> prisonerInfoList = new ArrayList<>();
+        for(int i=0;i<prisonerInfos.size();i++){
+            String info = prisonerInfos.get(i);
+            System.out.println(info);
+            //PrisonerInfo prisonerInfo = JsonUtil.stringToObj(info,PrisonerInfo.class);
+            JSONObject prisonerInfo = JSONObject.parseObject(info);
+            PrisonerInfo prisonerInfo1 = JSONObject.toJavaObject(prisonerInfo,PrisonerInfo.class);
+            System.out.println(prisonerInfo);
+            prisonerInfoList.add(prisonerInfo1);
+        }
+        return prisonerInfoList;
+    }
+
+    public List<Exception> getWan2(){
+
+        return null;
+    }
 
 }

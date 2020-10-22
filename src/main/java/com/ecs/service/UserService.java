@@ -44,10 +44,14 @@ public class UserService {
 
     public User userLogin(LoginRequest loginRequest) throws Exception {
         SimpleDateFormat mysqlSdf = new java.text.SimpleDateFormat(mysqlSdfPatternString);
-        User user = userMapper.getByUserIdAndPassword(loginRequest.getUserName(), loginRequest.getPassword());
-        if(user == null) {
-            throw new EdgeComputingServiceException(ResponseEnum.LOGIN_FAILED.getCode(), ResponseEnum.LOGIN_FAILED.getMessage());
+
+        User user1 = userMapper.getByUserId(loginRequest.getUserName());
+        if(user1 == null) {
+            throw new EdgeComputingServiceException(ResponseEnum.NO_USER.getCode(), ResponseEnum.NO_USER.getMessage());
         }else {
+            User user = userMapper.getByUserIdAndPassword(loginRequest.getUserName(), loginRequest.getPassword());
+            if(user == null)
+                throw new EdgeComputingServiceException(ResponseEnum.LOGIN_FAILED.getCode(), ResponseEnum.LOGIN_FAILED.getMessage());
             //采用jwt获得token
             Date createTime = new Date();
             //每七天需要重新登录(可以直接将过期时间写入token，解析token时即可判断是否过期，而无需在代码中判断)
@@ -64,7 +68,7 @@ public class UserService {
             user.setPassword(null);
             user.setTokenCreateAt(null);
         }
-        return user;
+        return user1;
     }
 
     public void userLogout(String token) throws Exception {

@@ -5,6 +5,7 @@ import com.ecs.model.PrisonerHeartBeat;
 import com.ecs.model.PrisonerRisk;
 import com.ecs.model.Response.*;
 import com.ecs.model.Task;
+import com.ecs.model.wan.PrisonerInfo;
 import com.ecs.service.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -73,6 +74,15 @@ public class PrisonerController {
         return response;
     }
 
-
+    @ApiOperation(value = "获取万学长数据")
+    @RequestMapping(path = "/getWan", method = RequestMethod.GET)
+    public HttpResponseContent getWan(){
+        List<PrisonerInfo> prisonerInfoList = prisonerService.getWan1();
+        HttpResponseContent response = new HttpResponseContent();
+        response.setCode(ResponseEnum.SUCCESS.getCode());
+        response.setMessage(ResponseEnum.SUCCESS.getMessage());
+        response.setData(prisonerInfoList);
+        return response;
+    }
 
 }
