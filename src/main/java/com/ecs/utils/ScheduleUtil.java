@@ -25,13 +25,17 @@ public class ScheduleUtil {
 
     private final CloudService cloudService;
     private final DeviceService deviceService;
+    private final UdpIntegrationClient udpIntegrationClient;
+    private final UdpSimpleClient udpSimpleClient;
     //private final EscapeGpsMapper escapeGpsMapper;
     //private final RiskLevelRecordingMapper riskLevelRecordingMapper;
 
     @Autowired
-    public ScheduleUtil(CloudService cloudService, DeviceService deviceService) {
+    public ScheduleUtil(CloudService cloudService, DeviceService deviceService,UdpIntegrationClient udpIntegrationClient,UdpSimpleClient udpSimpleClient) {
         this.cloudService = cloudService;
         this.deviceService = deviceService;
+        this.udpIntegrationClient = udpIntegrationClient;
+        this.udpSimpleClient = udpSimpleClient;
     }
 
     //@Scheduled(fixedDelay = 2000)
@@ -41,6 +45,12 @@ public class ScheduleUtil {
             String deviceNo = device.getDeviceNo();
             deviceService.rectifyDeviceStatus(deviceNo);
         }
+    }
+    @Scheduled(fixedDelay = 1000)
+    private void sendUdp() throws Exception{
+
+        //udpIntegrationClient.sendMessage("aaaa");
+        udpSimpleClient.sendMessage("bbbb");
     }
 }
 
