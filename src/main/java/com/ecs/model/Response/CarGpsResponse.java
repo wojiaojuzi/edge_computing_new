@@ -20,6 +20,8 @@ public class CarGpsResponse {
 
     private String height;
 
+    private long timestamp;
+
     public String getCarNo() {
         return carNo;
     }
@@ -74,5 +76,13 @@ public class CarGpsResponse {
 
     public void setHeight(String height) {
         this.height = height;
+    }
+
+    public long getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(long timestamp) {
+        this.timestamp = timestamp;
     }
 }

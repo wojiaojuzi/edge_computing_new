@@ -7,6 +7,7 @@ import com.ecs.mapper.VervelGpsMapper;
 import com.ecs.mapper.VervelMapper;
 import com.ecs.model.Device;
 import com.ecs.model.Exception.EdgeComputingServiceException;
+import com.ecs.model.Request.CloudVervelGps;
 import com.ecs.model.Response.ResponseEnum;
 import com.ecs.model.Vervel;
 import com.ecs.model.VervelGps;
@@ -33,7 +34,12 @@ public class VervelService {
     }
 
 
-
+    public void createVervelGps(CloudVervelGps cloudVervelGps){
+        SimpleDateFormat mysqlSdf = new SimpleDateFormat(mysqlSdfPatternString);
+        Date time = new Date();
+        String createAt = mysqlSdf.format(time);
+        vervelGpsMapper.createVervelGps(cloudVervelGps.getLatitude(),cloudVervelGps.getLongitude(),createAt,cloudVervelGps.getVervelNo());
+    }
 
     public Vervel getVervelByDeviceNo(String deviceNo){
         return vervelMapper.getVervelByDeviceNo(deviceNo);

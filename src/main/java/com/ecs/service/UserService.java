@@ -61,12 +61,12 @@ public class UserService {
             String token = CommonUtil.createJWT(content, "EdgeComputingService", createTime, expireTime);
             //更新数据库token_create_at，之后每次鉴权需要查看数据库查看自己的token是否是最新的
             userMapper.updateTokenCreateTimeByUserId(mysqlSdf.format(createTime), user.getUserId());
-
+            System.out.println(token);
 
             //将token返回作为登录凭证
-            user.setLoginToken(token);
-            user.setPassword(null);
-            user.setTokenCreateAt(null);
+            user1.setLoginToken(token);
+            user1.setPassword(null);
+            user1.setTokenCreateAt(null);
         }
         return user1;
     }

@@ -46,7 +46,7 @@ public class ScheduleUtil {
             deviceService.rectifyDeviceStatus(deviceNo);
         }
     }
-    @Scheduled(fixedDelay = 1000)
+    //@Scheduled(fixedDelay = 1000)
     private void sendUdp() throws Exception{
 
         //udpIntegrationClient.sendMessage("aaaa");

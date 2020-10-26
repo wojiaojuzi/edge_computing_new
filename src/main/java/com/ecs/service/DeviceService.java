@@ -124,6 +124,9 @@ public class DeviceService {
             Device de = deviceMapper.getByDeviceNo(deviceNo);
             if(de == null||de.getUserId().equals(userId)) {
                 if (deviceType.equals("一体化终端") || deviceType.equals("手持机")) {
+                    if(deviceMapper.getByUserId(userId)!=null){
+                        deviceMapper.deleteByDeviceNo(deviceMapper.getByUserId(userId).getDeviceNo());
+                    }
                     if (deviceMapper.getByDeviceNo(deviceNo) != null) {
                         deviceMapper.updateDeviceUserByDeviceNo(userId, deviceNo);
                         return deviceMapper.getByDeviceNo(deviceNo);

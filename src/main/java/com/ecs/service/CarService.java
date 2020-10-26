@@ -14,11 +14,14 @@ import com.ecs.utils.ImitateCoor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
 @Service
 public class CarService {
+    private static final String mysqlSdfPatternString = "yyyy-MM-dd HH:mm:ss";
     private final CarMapper carMapper;
     private final ConvoyMapper convoyMapper;
     private final DeviceMapper deviceMapper;
@@ -49,13 +52,13 @@ public class CarService {
     }
 
     //public List<CarAndTaskResponse> getCarAndTask
-    public List<CarGpsResponse> getCarGps(){
+    public List<CarGpsResponse> getCarGps() throws ParseException {
+        SimpleDateFormat mysqlSdf = new java.text.SimpleDateFormat(mysqlSdfPatternString);
         List<CarGpsResponse> carGpsResponses = new ArrayList<>();
         List<Car> cars = carMapper.getAll();
         for(int i = 0; i < cars.size(); i++){
             List<Convoy> convoys = convoyMapper.getByCarNo(cars.get(i).getCarNo());
             CarGpsResponse carGpsResponse = new CarGpsResponse();
-            //List<DeviceGps> deviceGpsList = new ArrayList<>();
             carGpsResponse.setCarNo(cars.get(i).getCarNo());
             carGpsResponse.setCarType(cars.get(i).getType());
             carGpsResponse.setColor(cars.get(i).getColor());
@@ -68,9 +71,11 @@ public class CarService {
                     String device_no = deviceMapper.getByUserIdAndDeviceType(user_id,"一体化终端").getDeviceNo();
                     deviceGps = deviceGpsMapper.getByDeviceNo(device_no);
                     if(deviceGps!=null){
+                        long timestamp = mysqlSdf.parse(deviceGps.getCreateAt()).getTime();
                         carGpsResponse.setHeight(deviceGps.getHeight());
                         carGpsResponse.setLongitude(deviceGps.getLongitude());
                         carGpsResponse.setLatitude(deviceGps.getLatitude());
+                        carGpsResponse.setTimestamp(timestamp);
                         break;
                     }
                 }

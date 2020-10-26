@@ -2,6 +2,7 @@ package com.ecs.controller;
 
 import com.ecs.model.*;
 import com.ecs.model.Exception.EdgeComputingServiceException;
+import com.ecs.model.Request.CloudVervelGps;
 import com.ecs.model.Request.DeviceRegisterRequest;
 import com.ecs.model.Response.DeviceCloudGraphResponse;
 import com.ecs.model.Response.DeviceResponse;
@@ -329,6 +330,12 @@ public class DeviceController {
     @RequestMapping(path = "/isConnectivity", method = RequestMethod.GET)
     public String isConnectivity(){
         return "true";
+    }
+
+    @ApiOperation(value = "云中心下发脚环GPS")
+    @RequestMapping(path = "/pushVervelGps", method = RequestMethod.GET)
+    public void pushVervelGps(@RequestBody CloudVervelGps cloudVervelGps){
+        vervelService.createVervelGps(cloudVervelGps);
     }
 
 
